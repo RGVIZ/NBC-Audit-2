@@ -437,6 +437,31 @@
             font-family: var(--font-family);
         }
 
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-group-highlight {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .actual-value-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-family);
+        }
+
         .spec-box span {
             font-weight: 500;
             color: var(--secondary-text);
@@ -706,6 +731,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            try {
             const screens = document.querySelectorAll('.screen');
             const navCards = document.querySelectorAll('.nav-card');
             const backHomeBtns = document.querySelectorAll('.btn-back-home');
@@ -1049,13 +1075,16 @@
             });
 
             submitReasonBtn.addEventListener('click', () => {
+                if (!currentCheckpointCard) return; // Prevent errors if card is not set
                 reasonModal.classList.add('hidden');
                 const reason = reasonTextarea.value;
                 const checkpointId = parseInt(currentCheckpointCard.id.split('-')[1]);
                 const checkpointData = checkpointsData['Machine'].find(c => c.id === checkpointId);
                 
-                checkpointData.applicable = false;
-                checkpointData.reason = reason;
+                if (checkpointData) {
+                    checkpointData.applicable = false;
+                    checkpointData.reason = reason;
+                }
 
                 const body = currentCheckpointCard.querySelector('.checkpoint-body');
                 if (body) body.classList.add('hidden');
@@ -1109,6 +1138,10 @@
 
             // Initialize view
             showScreen('home-screen');
+            } catch (error) {
+                console.error("An error occurred during app initialization:", error);
+                document.body.innerHTML = '<div style="padding: 2rem; text-align: center; font-family: sans-serif;"><h1>An error occurred</h1><p>The application failed to start. Please check the developer console for more details.</p></div>';
+            }
         });
     </script>
 </body>
