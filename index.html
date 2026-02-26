@@ -470,27 +470,89 @@
             cursor: pointer;
         }
         
-        .disposition-btn.active {
-            background: var(--accent-color-blue);
-            color: white;
-            border-color: var(--accent-color-blue);
+        .disposition-btn.active.compliant, .action-btn.compliant { background-color: var(--accent-color-green); color: white; border-color: var(--accent-color-green); }
+        .disposition-btn.active.nc, .action-btn.nc { background-color: var(--accent-color-red); color: white; border-color: var(--accent-color-red); }
+        .disposition-btn.active.ofi, .action-btn.ofi { background-color: var(--accent-color-yellow); color: #212529; border-color: var(--accent-color-yellow); }
+        
+        .action-type-btn.active.capa, .action-btn.capa { background-color: #fd7e14; color: white; border-color: #fd7e14; }
+        .action-type-btn.active.prs, .action-btn.prs { background-color: #fd7e14; color: white; border-color: #fd7e14; }
+
+        .action-type-btn[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #e9ecef;
+            color: var(--secondary-text);
+            border-color: var(--border-color);
         }
+
+        .observation-group {
+            position: relative;
+        }
+
+        .mic-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--secondary-text);
+        }
+        .mic-btn.recording {
+            color: var(--accent-color-red);
+        }
+
+        .evidence-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .evidence-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            color: var(--secondary-text);
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .evidence-btn:hover { background-color: #e9ecef; color: var(--primary-text); }
 
         .disabled-overlay {
             position: relative;
         }
         .disabled-overlay::after {
-            content: 'Not Applicable';
+            content: '';
             position: absolute;
             inset: 0;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(2px);
             border-radius: 12px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
             display: grid;
             place-items: center;
-            color: var(--secondary-text);
-            font-weight: 600;
+            z-index: 100;
         }
+
+        .modal-content {
+            background: var(--card-background);
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+        }
+        .modal-content h3 { margin-bottom: 1rem; }
+        .modal-content textarea { width: 100%; min-height: 100px; margin-bottom: 1rem; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-color); }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; }
 
     </style>
 </head>
@@ -582,85 +644,26 @@
         <!-- Audit Evaluation Screen -->
         <div id="audit-evaluation-screen" class="screen hidden">
             <a href="#" class="back-link" data-target="audit-request-details-screen">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 Back to Criteria
             </a>
             <div class="evaluation-header">
                 <h2>Machine</h2>
                 <p>Complete the checkpoints below.</p>
             </div>
-            <div class="checkpoints-grid">
-                <div class="checkpoint-card">
-                    <div class="checkpoint-header">
-                        <span class="checkpoint-title">MACHINE</span>
-                        <label class="checkbox-label"><input type="checkbox" checked> Applicable</label>
-                    </div>
-                    <p class="checkpoint-question">Is the machine calibrated?</p>
-                    <div class="spec-box">
-                        <p>Specification</p>
-                        <p><span>Nominal: 100</span> <span>USL: 105</span> <span>LSL: 95</span></p>
-                    </div>
-                    <div class="form-group">
-                        <label>Observation</label>
-                        <textarea placeholder="Enter your observation..."></textarea>
-                    </div>
-                    <div class="score-group">
-                        <label>Score</label>
-                        <div class="score-options">
-                            <div class="score-option zero">0</div>
-                            <div class="score-option four active">4</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Disposition</label>
-                        <div class="disposition-group">
-                            <button class="disposition-btn">NC</button>
-                            <button class="disposition-btn">OFI</button>
-                            <button class="disposition-btn active">Compliant</button>
-                            <button class="disposition-btn">CAPA</button>
-                            <button class="disposition-btn">PRS</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="checkpoint-card">
-                    <div class="checkpoint-header">
-                        <span class="checkpoint-title">MACHINE</span>
-                        <label class="checkbox-label"><input type="checkbox" checked> Applicable</label>
-                    </div>
-                    <p class="checkpoint-question">Is routine maintenance performed on schedule?</p>
-                    <div class="spec-box">
-                        <p>Specification</p>
-                        <p>Maintenance logs must be current</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Observation</label>
-                        <textarea placeholder="Enter your observation..."></textarea>
-                    </div>
-                    <div class="score-group">
-                        <label>Score</label>
-                        <div class="score-options">
-                             <div class="score-option zero active">0</div>
-                            <div class="score-option four">4</div>
-                        </div>
-                    </div>
-                     <div class="form-group">
-                        <label>Disposition</label>
-                        <div class="disposition-group">
-                            <button class="disposition-btn active">NC</button>
-                            <button class="disposition-btn">OFI</button>
-                            <button class="disposition-btn">Compliant</button>
-                            <button class="disposition-btn">CAPA</button>
-                            <button class="disposition-btn">PRS</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="checkpoint-card disabled-content">
-                    <div class="checkpoint-header">
-                        <span class="checkpoint-title">MACHINE</span>
-                        <label class="checkbox-label"><input type="checkbox"> Applicable</label>
-                    </div>
-                    <div class="disabled-overlay"></div>
-                    <p class="checkpoint-question">Are safety guards in place and functional?</p>
+            <div class="checkpoints-grid" id="checkpoints-grid">
+                <!-- Checkpoints will be dynamically rendered here -->
+            </div>
+        </div>
+
+        <!-- Not Applicable Reason Modal -->
+        <div id="reason-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <h3>Reason for Not Applicable</h3>
+                <textarea id="reason-textarea" placeholder="Enter reason..."></textarea>
+                <div class="modal-actions">
+                    <button id="cancel-reason-btn" class="btn">Cancel</button>
+                    <button id="submit-reason-btn" class="btn btn-primary">Submit</button>
                 </div>
             </div>
         </div>
@@ -803,25 +806,234 @@
             });
 
             document.querySelectorAll('.question-item').forEach(item => {
-                item.addEventListener('click', navigateTo);
-            });
-            
-            document.querySelectorAll('.checkpoint-card .checkbox-label input').forEach(checkbox => {
-                checkbox.addEventListener('change', (e) => {
-                    const card = e.target.closest('.checkpoint-card');
-                    if (e.target.checked) {
-                        card.classList.remove('disabled-content');
-                        card.querySelector('.disabled-overlay')?.remove();
-                    } else {
-                        card.classList.add('disabled-content');
-                        if (!card.querySelector('.disabled-overlay')) {
-                            const overlay = document.createElement('div');
-                            overlay.className = 'disabled-overlay';
-                            card.appendChild(overlay);
-                        }
-                    }
+                item.addEventListener('click', (e) => {
+                    renderCheckpoints('Machine'); // Example: Render 'Machine' checkpoints
+                    navigateTo(e);
                 });
             });
+
+            const checkpointsGrid = document.getElementById('checkpoints-grid');
+            const reasonModal = document.getElementById('reason-modal');
+            const reasonTextarea = document.getElementById('reason-textarea');
+            const cancelReasonBtn = document.getElementById('cancel-reason-btn');
+            const submitReasonBtn = document.getElementById('submit-reason-btn');
+            let currentCheckpointCard = null;
+
+            const checkpointsData = {
+                'Machine': [
+                    { id: 1, criteria: 'Machine', name: 'Is the machine calibrated?', spec_type: 'variable', specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true },
+                    { id: 2, criteria: 'Machine', name: 'Are safety guards in place and functional?', spec_type: 'variable', specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true },
+                    { id: 3, criteria: 'Machine', name: 'Is routine maintenance performed on schedule?', spec_type: 'attribute', specification: 'Maintenance logs must be current', applicable: true },
+                    { id: 4, criteria: 'Machine', name: 'Does the machine temperature meet specification?', spec_type: 'attribute', specification: 'Temperature between 80-90°C', applicable: true },
+                ]
+            };
+
+            function createCheckpointCardHTML(checkpoint) {
+                const specHTML = checkpoint.spec_type === 'variable'
+                    ? `<p><span>Nominal: ${checkpoint.specification.nominal}</span> <span>USL: ${checkpoint.specification.usl}</span> <span>LSL: ${checkpoint.specification.lsl}</span></p>`
+                    : `<p>${checkpoint.specification}</p>`;
+
+                const actualValueHTML = checkpoint.spec_type === 'variable'
+                    ? `<div class="form-group">
+                           <label>Actual Value</label>
+                           <input type="number" class="actual-value-input" placeholder="Enter value" data-lsl="${checkpoint.specification.lsl}" data-usl="${checkpoint.specification.usl}">
+                       </div>`
+                    : '';
+
+                return `
+                <div class="checkpoint-card" id="checkpoint-${checkpoint.id}" data-spec-type="${checkpoint.spec_type}">
+                    <div class="checkpoint-header">
+                        <span class="checkpoint-title">${checkpoint.criteria}</span>
+                        <label><input type="checkbox" class="applicable-checkbox" ${checkpoint.applicable ? 'checked' : ''}> Applicable</label>
+                    </div>
+                    <p class="checkpoint-question">${checkpoint.name}</p>
+                    <div class="spec-box">
+                        <p><strong>Specification</strong></p>
+                        ${specHTML}
+                    </div>
+                    ${actualValueHTML}
+                    <div class="form-group observation-group">
+                        <label>Observation</label>
+                        <textarea placeholder="Enter your observation..."></textarea>
+                        <button class="mic-btn">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label>Score</label>
+                        <div class="score-options">
+                            <div class="score-option" data-value="0">0</div>
+                            <div class="score-option" data-value="4">4</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Disposition</label>
+                        <div class="disposition-group">
+                            <button class="disposition-btn" data-value="NC">NC</button>
+                            <button class="disposition-btn" data-value="OFI">OFI</button>
+                            <button class="disposition-btn" data-value="Compliant">Compliant</button>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label>Action Type</label>
+                        <div class="disposition-group">
+                            <button class="action-type-btn" data-value="CAPA">CAPA</button>
+                            <button class="action-type-btn" data-value="PRS">PRS</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Supporting Evidences</label>
+                        <div class="evidence-group">
+                            <button class="evidence-btn" title="Camera"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></button>
+                            <button class="evidence-btn" title="Attach File"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button>
+                            <button class="evidence-btn" title="Voice Recorder"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="2" width="4" height="10" rx="1" ry="1"></rect><path d="M8 2v10c0 2.2-1.8 4-4 4"></path><circle cx="4" cy="16" r="2"></circle><path d="M8 18V5a3 3 0 0 0-3-3S2 2 2 5v13"></path><path d="M20 18v-2a2 2 0 0 0-2-2h-2v4h2a2 2 0 0 0 2-2z"></path></svg></button>
+                            <button class="evidence-btn" title="View Evidences"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+                        </div>
+                    </div>
+                    ${!checkpoint.applicable ? '<div class="disabled-overlay"></div>' : ''}
+                </div>
+                `;
+            }
+
+            function renderCheckpoints(criteria) {
+                const data = checkpointsData[criteria] || [];
+                checkpointsGrid.innerHTML = data.map(createCheckpointCardHTML).join('');
+            }
+
+            function updateCheckpointState(card, updates) {
+                const scoreOptions = card.querySelector('.score-options');
+                const dispositionBtns = card.querySelectorAll('.disposition-btn');
+                const actionTypeBtns = card.querySelectorAll('.action-type-btn');
+
+                if (updates.score !== undefined) {
+                    scoreOptions.querySelectorAll('.score-option').forEach(el => el.classList.remove('active', 'score-0', 'score-4'));
+                    const activeScore = scoreOptions.querySelector(`[data-value="${updates.score}"]`);
+                    if(activeScore) {
+                         activeScore.classList.add('active');
+                         activeScore.classList.add(updates.score === 0 ? 'score-0' : 'score-4');
+                    }
+                }
+
+                if (updates.disposition !== undefined) {
+                    dispositionBtns.forEach(el => el.classList.remove('active', 'nc', 'ofi', 'compliant'));
+                     const activeDisp = card.querySelector(`.disposition-btn[data-value="${updates.disposition}"]`);
+                     if(activeDisp) {
+                         activeDisp.classList.add('active', updates.disposition.toLowerCase());
+                     }
+                }
+
+                const isCompliant = card.querySelector('.disposition-btn[data-value="Compliant"]')?.classList.contains('active');
+                actionTypeBtns.forEach(btn => {
+                    btn.disabled = isCompliant;
+                });
+            }
+
+            checkpointsGrid.addEventListener('input', (e) => {
+                if (e.target.classList.contains('actual-value-input')) {
+                    const card = e.target.closest('.checkpoint-card');
+                    const lsl = parseFloat(e.target.dataset.lsl);
+                    const usl = parseFloat(e.target.dataset.usl);
+                    const value = parseFloat(e.target.value);
+
+                    if (!isNaN(value)) {
+                        if (value >= lsl && value <= usl) {
+                            updateCheckpointState(card, { score: 4, disposition: 'Compliant' });
+                        } else {
+                            updateCheckpointState(card, { score: 0 });
+                        }
+                    }
+                }
+            });
+
+            checkpointsGrid.addEventListener('click', (e) => {
+                const target = e.target;
+                const card = target.closest('.checkpoint-card');
+                if (!card) return;
+
+                if (target.closest('.score-option')) {
+                    const value = parseInt(target.closest('.score-option').dataset.value);
+                    if (value === 4) {
+                        updateCheckpointState(card, { score: 4, disposition: 'Compliant' });
+                    } else {
+                        updateCheckpointState(card, { score: 0 });
+                    }
+                } else if (target.closest('.disposition-btn')) {
+                    const value = target.closest('.disposition-btn').dataset.value;
+                    updateCheckpointState(card, { disposition: value });
+                } else if (target.closest('.action-type-btn')) {
+                    if(target.closest('.action-type-btn').disabled) return;
+                    card.querySelectorAll('.action-type-btn').forEach(b => b.classList.remove('active', 'capa', 'prs'));
+                    target.classList.add('active', target.dataset.value.toLowerCase());
+                } else if (target.closest('.mic-btn')) {
+                    startSpeechRecognition(card.querySelector('textarea'));
+                }
+            });
+
+            checkpointsGrid.addEventListener('change', (e) => {
+                if (e.target.classList.contains('applicable-checkbox')) {
+                    currentCheckpointCard = e.target.closest('.checkpoint-card');
+                    if (!e.target.checked) {
+                        reasonModal.classList.remove('hidden');
+                    } else {
+                        currentCheckpointCard.querySelector('.disabled-overlay')?.remove();
+                    }
+                }
+            });
+
+            cancelReasonBtn.addEventListener('click', () => {
+                reasonModal.classList.add('hidden');
+                const checkbox = currentCheckpointCard.querySelector('.applicable-checkbox');
+                if (checkbox) checkbox.checked = true;
+            });
+
+            submitReasonBtn.addEventListener('click', () => {
+                reasonModal.classList.add('hidden');
+                if (!currentCheckpointCard.querySelector('.disabled-overlay')) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'disabled-overlay';
+                    currentCheckpointCard.appendChild(overlay);
+                }
+                console.log(`Reason for N/A on ${currentCheckpointCard.id}: ${reasonTextarea.value}`);
+                reasonTextarea.value = '';
+            });
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                let targetTextarea = null;
+
+                recognition.onstart = () => {
+                    const micBtn = targetTextarea.nextElementSibling;
+                    micBtn.classList.add('recording');
+                };
+
+                recognition.onend = () => {
+                    const micBtn = targetTextarea.nextElementSibling;
+                    micBtn.classList.remove('recording');
+                    targetTextarea = null;
+                };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    targetTextarea.value += transcript;
+                };
+                
+                window.startSpeechRecognition = (textarea) => {
+                    if (targetTextarea) return; // Recognition already in progress
+                    targetTextarea = textarea;
+                    recognition.start();
+                };
+
+            } else {
+                 window.startSpeechRecognition = () => {
+                    alert('Speech recognition is not supported in this browser.');
+                };
+            }
 
             // Initialize view
             showScreen('home-screen');
