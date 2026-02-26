@@ -407,8 +407,34 @@
         }
 
         .spec-box p {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-group-highlight {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .actual-value-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-family);
         }
 
         .spec-box span {
@@ -461,10 +487,10 @@
             flex-wrap: wrap;
         }
 
-        .disposition-btn {
+        .disposition-btn, .action-type-btn {
             border: 1px solid var(--border-color);
             background: transparent;
-            border-radius: 20px;
+            border-radius: 8px;
             padding: 0.4rem 1rem;
             font-size: 0.8rem;
             cursor: pointer;
@@ -511,7 +537,7 @@
         .evidence-btn {
             background: none;
             border: 1px solid var(--border-color);
-            border-radius: 50%;
+            border-radius: 8px;
             width: 36px;
             height: 36px;
             display: grid;
@@ -532,6 +558,14 @@
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(2px);
             border-radius: 12px;
+        }
+
+        .na-reason-display {
+            background-color: #e9ecef;
+            padding: 1rem;
+            border-radius: 8px;
+            color: var(--secondary-text);
+            font-style: italic;
         }
 
         .modal-overlay {
@@ -821,10 +855,10 @@
 
             const checkpointsData = {
                 'Machine': [
-                    { id: 1, criteria: 'Machine', name: 'Is the machine calibrated?', spec_type: 'variable', specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true },
-                    { id: 2, criteria: 'Machine', name: 'Are safety guards in place and functional?', spec_type: 'variable', specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true },
-                    { id: 3, criteria: 'Machine', name: 'Is routine maintenance performed on schedule?', spec_type: 'attribute', specification: 'Maintenance logs must be current', applicable: true },
-                    { id: 4, criteria: 'Machine', name: 'Does the machine temperature meet specification?', spec_type: 'attribute', specification: 'Temperature between 80-90°C', applicable: true },
+                    { id: 1, criteria: 'Machine', name: 'Is the machine calibrated?', spec_type: 'variable', specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true, reason: '' },
+                    { id: 2, criteria: 'Machine', name: 'Are safety guards in place and functional?', spec_type: 'variable', specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true, reason: '' },
+                    { id: 3, criteria: 'Machine', name: 'Is routine maintenance performed on schedule?', spec_type: 'attribute', specification: 'Maintenance logs must be current', applicable: true, reason: '' },
+                    { id: 4, criteria: 'Machine', name: 'Does the machine temperature meet specification?', spec_type: 'attribute', specification: 'Temperature between 80-90°C', applicable: true, reason: '' },
                 ]
             };
 
@@ -838,7 +872,7 @@
                            <label>Actual Value</label>
                            <input type="number" class="actual-value-input" placeholder="Enter value" data-lsl="${checkpoint.specification.lsl}" data-usl="${checkpoint.specification.usl}">
                        </div>`
-                    : '';
+                    : '<div class="form-group"></div>'; // Empty div to maintain layout
 
                 return `
                 <div class="checkpoint-card" id="checkpoint-${checkpoint.id}" data-spec-type="${checkpoint.spec_type}">
@@ -851,46 +885,66 @@
                         <p><strong>Specification</strong></p>
                         ${specHTML}
                     </div>
-                    ${actualValueHTML}
-                    <div class="form-group observation-group">
-                        <label>Observation</label>
-                        <textarea placeholder="Enter your observation..."></textarea>
-                        <button class="mic-btn">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
-                        </button>
-                    </div>
-                    <div class="form-group">
-                        <label>Score</label>
-                        <div class="score-options">
-                            <div class="score-option" data-value="0">0</div>
-                            <div class="score-option" data-value="4">4</div>
+                    
+                    <div class="checkpoint-body ${checkpoint.applicable ? '' : 'hidden'}">
+                        <div class="form-group-highlight">
+                            <div class="form-row">
+                                ${actualValueHTML}
+                                <div class="form-group">
+                                    <label>Score</label>
+                                    <div class="score-options">
+                                        <div class="score-option" data-value="0">0</div>
+                                        <div class="score-option" data-value="4">4</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-highlight">
+                             <div class="form-group observation-group">
+                                <label>Observation</label>
+                                <textarea placeholder="Enter your observation..."></textarea>
+                                <button class="mic-btn">
+                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group-highlight">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Disposition</label>
+                                    <div class="disposition-group">
+                                        <button class="disposition-btn" data-value="NC">NC</button>
+                                        <button class="disposition-btn" data-value="OFI">OFI</button>
+                                        <button class="disposition-btn" data-value="Compliant">Compliant</button>
+                                    </div>
+                                </div>
+                                 <div class="form-group">
+                                    <label>Action Type</label>
+                                    <div class="disposition-group">
+                                        <button class="action-type-btn" data-value="CAPA">CAPA</button>
+                                        <button class="action-type-btn" data-value="PRS">PRS</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-highlight">
+                            <div class="form-group">
+                                <label>Supporting Evidences</label>
+                                <div class="evidence-group">
+                                    <button class="evidence-btn" title="Camera"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></button>
+                                    <button class="evidence-btn" title="Attach File"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button>
+                                    <button class="evidence-btn" title="Voice Recorder"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button>
+                                    <button class="evidence-btn" title="View Evidences"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Disposition</label>
-                        <div class="disposition-group">
-                            <button class="disposition-btn" data-value="NC">NC</button>
-                            <button class="disposition-btn" data-value="OFI">OFI</button>
-                            <button class="disposition-btn" data-value="Compliant">Compliant</button>
-                        </div>
+                    <div class="na-reason-display ${checkpoint.applicable ? 'hidden' : ''}">
+                         ${!checkpoint.applicable ? `<p><strong>Not Applicable:</strong> ${checkpoint.reason}</p>` : ''}
                     </div>
-                     <div class="form-group">
-                        <label>Action Type</label>
-                        <div class="disposition-group">
-                            <button class="action-type-btn" data-value="CAPA">CAPA</button>
-                            <button class="action-type-btn" data-value="PRS">PRS</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Supporting Evidences</label>
-                        <div class="evidence-group">
-                            <button class="evidence-btn" title="Camera"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></button>
-                            <button class="evidence-btn" title="Attach File"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button>
-                            <button class="evidence-btn" title="Voice Recorder"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="2" width="4" height="10" rx="1" ry="1"></rect><path d="M8 2v10c0 2.2-1.8 4-4 4"></path><circle cx="4" cy="16" r="2"></circle><path d="M8 18V5a3 3 0 0 0-3-3S2 2 2 5v13"></path><path d="M20 18v-2a2 2 0 0 0-2-2h-2v4h2a2 2 0 0 0 2-2z"></path></svg></button>
-                            <button class="evidence-btn" title="View Evidences"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
-                        </div>
-                    </div>
-                    ${!checkpoint.applicable ? '<div class="disabled-overlay"></div>' : ''}
                 </div>
                 `;
             }
@@ -972,10 +1026,18 @@
             checkpointsGrid.addEventListener('change', (e) => {
                 if (e.target.classList.contains('applicable-checkbox')) {
                     currentCheckpointCard = e.target.closest('.checkpoint-card');
+                    const checkpointId = parseInt(currentCheckpointCard.id.split('-')[1]);
+                    const checkpointData = checkpointsData['Machine'].find(c => c.id === checkpointId);
+
                     if (!e.target.checked) {
                         reasonModal.classList.remove('hidden');
                     } else {
-                        currentCheckpointCard.querySelector('.disabled-overlay')?.remove();
+                        checkpointData.applicable = true;
+                        checkpointData.reason = '';
+                        const body = currentCheckpointCard.querySelector('.checkpoint-body');
+                        if (body) body.classList.remove('hidden');
+                        const reasonDisplay = currentCheckpointCard.querySelector('.na-reason-display');
+                        if (reasonDisplay) reasonDisplay.classList.add('hidden');
                     }
                 }
             });
@@ -988,12 +1050,22 @@
 
             submitReasonBtn.addEventListener('click', () => {
                 reasonModal.classList.add('hidden');
-                if (!currentCheckpointCard.querySelector('.disabled-overlay')) {
-                    const overlay = document.createElement('div');
-                    overlay.className = 'disabled-overlay';
-                    currentCheckpointCard.appendChild(overlay);
+                const reason = reasonTextarea.value;
+                const checkpointId = parseInt(currentCheckpointCard.id.split('-')[1]);
+                const checkpointData = checkpointsData['Machine'].find(c => c.id === checkpointId);
+                
+                checkpointData.applicable = false;
+                checkpointData.reason = reason;
+
+                const body = currentCheckpointCard.querySelector('.checkpoint-body');
+                if (body) body.classList.add('hidden');
+
+                const reasonDisplay = currentCheckpointCard.querySelector('.na-reason-display');
+                if (reasonDisplay) {
+                    reasonDisplay.innerHTML = `<p><strong>Not Applicable:</strong> ${reason || 'Not specified'}</p>`;
+                    reasonDisplay.classList.remove('hidden');
                 }
-                console.log(`Reason for N/A on ${currentCheckpointCard.id}: ${reasonTextarea.value}`);
+
                 reasonTextarea.value = '';
             });
 
