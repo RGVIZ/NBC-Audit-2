@@ -216,6 +216,12 @@
             margin-bottom: 0.75rem;
         }
 
+        .card-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem 1.5rem; 
+        }
+
         .card-details p {
             font-size: 0.9rem;
             color: var(--secondary-text);
@@ -407,8 +413,13 @@
         }
 
         .spec-box p {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .spec-box .spec-value {
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 1.1rem;
             text-align: center;
         }
 
@@ -426,32 +437,7 @@
             background-color: #f8f9fa;
             padding: 1rem;
             border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .actual-value-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-family: var(--font-family);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 1.5rem;
-            align-items: flex-start;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .form-group-highlight {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .actual-value-input {
@@ -493,18 +479,19 @@
 
         .score-options {
             display: flex;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
+            gap: 0.5rem;
         }
 
         .score-option {
-            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            border-radius: 8px;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
             cursor: pointer;
         }
-        .score-option.zero { border-right: 1px solid var(--border-color); }
-        .score-option.active.zero { background: var(--accent-color-red); color: white; }
-        .score-option.active.four { background: var(--accent-color-green); color: white; }
+        .score-option.active.zero { background: var(--accent-color-red); color: white; border-color: var(--accent-color-red); }
+        .score-option.active.four { background: var(--accent-color-green); color: white; border-color: var(--accent-color-green); }
 
         .disposition-group {
             display: flex;
@@ -610,7 +597,16 @@
             max-width: 500px;
         }
         .modal-content h3 { margin-bottom: 1rem; }
-        .modal-content textarea { width: 100%; min-height: 100px; margin-bottom: 1rem; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-color); }
+        .modal-content textarea { 
+            width: 100%; 
+            min-height: 100px; 
+            margin-bottom: 1rem; 
+            padding: 0.75rem; 
+            border-radius: 8px; 
+            border: 1px solid var(--border-color); 
+            font-family: var(--font-family);
+            font-size: 0.9rem;
+        }
         .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; }
 
     </style>
@@ -803,6 +799,7 @@
                             <p><strong>Type:</strong> ${plan.type}</p>
                             <p><strong>Process:</strong> ${plan.process}</p>
                             <p><strong>Plant:</strong> ${plan.plant}</p>
+                            <p><strong>Line:</strong> ${plan.line}</p>
                             <p><strong>Auditor:</strong> ${plan.auditor}</p>
                             <p><strong>Auditee:</strong> ${plan.auditee}</p>
                             <p><strong>Start Date:</strong> ${plan.start}</p>
@@ -890,8 +887,8 @@
 
             function createCheckpointCardHTML(checkpoint) {
                 const specHTML = checkpoint.spec_type === 'variable'
-                    ? `<p><span>Nominal: ${checkpoint.specification.nominal}</span> <span>USL: ${checkpoint.specification.usl}</span> <span>LSL: ${checkpoint.specification.lsl}</span></p>`
-                    : `<p>${checkpoint.specification}</p>`;
+                    ? `<div class="spec-value"><span>Nominal: <strong>${checkpoint.specification.nominal}</strong></span> <span>USL: <strong>${checkpoint.specification.usl}</strong></span> <span>LSL: <strong>${checkpoint.specification.lsl}</strong></span></div>`
+                    : `<div class="spec-value"><strong>${checkpoint.specification}</strong></div>`;
 
                 const actualValueHTML = checkpoint.spec_type === 'variable'
                     ? `<div class="form-group">
@@ -908,7 +905,7 @@
                     </div>
                     <p class="checkpoint-question">${checkpoint.name}</p>
                     <div class="spec-box">
-                        <p><strong>Specification</strong></p>
+                        <p>Specification</p>
                         ${specHTML}
                     </div>
                     
@@ -919,8 +916,8 @@
                                 <div class="form-group">
                                     <label>Score</label>
                                     <div class="score-options">
-                                        <div class="score-option" data-value="0">0</div>
-                                        <div class="score-option" data-value="4">4</div>
+                                        <button class="score-option zero" data-value="0">0</button>
+                                        <button class="score-option four" data-value="4">4</button>
                                     </div>
                                 </div>
                             </div>
