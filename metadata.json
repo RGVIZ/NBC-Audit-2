@@ -1,0 +1,5 @@
+{
+  "name": "PQA Audit",
+  "description": "A tablet-friendly mobile audit application for managing audit plans and requests.",
+  "requestFramePermissions": []
+}

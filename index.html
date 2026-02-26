@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PQA Audit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --primary-text: #212529;
+            --secondary-text: #6c757d;
+            --border-color: #dee2e6;
+            --accent-color-green: #198754;
+            --accent-color-blue: #0d6efd;
+            --accent-color-yellow: #ffc107;
+            --accent-color-red: #dc3545;
+            --button-text-light: #ffffff;
+            --font-family: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--primary-text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .screen {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Home Screen --- */
+        .home-screen {
+            text-align: center;
+            padding-top: 10vh;
+        }
+
+        .home-screen h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .home-screen p {
+            color: var(--secondary-text);
+            margin-bottom: 3rem;
+        }
+
+        .home-nav-cards {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .nav-card {
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            width: 280px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-card p {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* --- Shared List Styles --- */
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .list-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color-green);
+            color: var(--button-text-light);
+        }
+        
+        .btn-primary:hover {
+             background-color: #157347;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding-bottom: 0.75rem;
+            cursor: pointer;
+            color: var(--secondary-text);
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .tab.active, .tab:hover {
+            color: var(--primary-text);
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary-text);
+        }
+        
+        .audit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .audit-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .audit-card:hover {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-date {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .card-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+        }
+
+        .status-new { background-color: #e0eaff; color: #0d6efd; }
+        .status-verified { background-color: #fff0c7; color: #a67c00; }
+        .status-execute { background-color: #e9ecef; color: #495057; }
+
+        .card-body h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-details p {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            line-height: 1.6;
+        }
+        
+        .card-details p strong {
+            color: var(--primary-text);
+            font-weight: 500;
+        }
+
+        /* --- Audit Plan Acceptance --- */
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            flex-grow: 1;
+            text-align: center;
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background-color: #f8f9fa;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .action-btn:hover { background-color: #e9ecef; }
+        .action-btn.selected {
+            border-color: var(--accent-color-blue);
+            background-color: #e0eaff;
+            color: var(--accent-color-blue);
+        }
+        .action-btn.selected-red {
+             border-color: var(--accent-color-red);
+            background-color: #fbe9eb;
+            color: var(--accent-color-red);
+        }
+        .action-btn.selected-yellow {
+             border-color: var(--accent-color-yellow);
+            background-color: #fff0c7;
+            color: #a67c00;
+        }
+
+        .card-footer {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card-footer textarea, .card-footer input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-family);
+            font-size: 0.9rem;
+        }
+
+        .card-footer .btn-submit {
+            background-color: var(--accent-color-blue);
+            color: var(--button-text-light);
+            width: 100%;
+        }
+        
+        .date-inputs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* --- Details & Evaluation --- */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary-text);
+            text-decoration: none;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        
+        .details-card, .evaluation-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .detail-item h4 {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+        }
+        .detail-item p {
+            font-weight: 600;
+        }
+
+        .questions-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            background: #e9ecef;
+            border-radius: 8px;
+            margin: 2rem -2rem;
+        }
+
+        .question-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        .question-item:last-child { border-bottom: none; }
+        .question-item h3 { font-weight: 600; }
+        .question-item .count {
+            background: #e9ecef;
+            color: var(--secondary-text);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+        }
+
+        /* --- Evaluation Screen --- */
+        .evaluation-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .evaluation-header p {
+            color: var(--secondary-text);
+        }
+
+        .checkpoints-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .checkpoint-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .checkpoint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .checkpoint-title {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .checkpoint-question {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .spec-box {
+            background: #e0eaff;
+            border: 1px solid #b3caff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .spec-box p {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .spec-box span {
+            font-weight: 500;
+            color: var(--secondary-text);
+            margin-right: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-family);
+        }
+        
+        .score-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0;
+        }
+
+        .score-options {
+            display: flex;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .score-option {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+        .score-option.zero { border-right: 1px solid var(--border-color); }
+        .score-option.active.zero { background: var(--accent-color-red); color: white; }
+        .score-option.active.four { background: var(--accent-color-green); color: white; }
+
+        .disposition-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .disposition-btn {
+            border: 1px solid var(--border-color);
+            background: transparent;
+            border-radius: 20px;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .disposition-btn.active {
+            background: var(--accent-color-blue);
+            color: white;
+            border-color: var(--accent-color-blue);
+        }
+
+        .disabled-overlay {
+            position: relative;
+        }
+        .disabled-overlay::after {
+            content: 'Not Applicable';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(2px);
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: var(--secondary-text);
+            font-weight: 600;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- Home Screen -->
+        <div id="home-screen" class="screen">
+            <div class="home-screen">
+                <h1>PQA Audit</h1>
+                <p>Your central hub for managing audit plans and requests.</p>
+                <div class="home-nav-cards">
+                    <div class="nav-card" data-target="audit-plan-acceptance-screen">
+                        <h2>Audit Plan Acceptance</h2>
+                        <p>Review and respond to pending audit plans.</p>
+                    </div>
+                    <div class="nav-card" data-target="audit-requests-screen">
+                        <h2>Audit Requests</h2>
+                        <p>View and manage all audit requests.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Requests Screen -->
+        <div id="audit-requests-screen" class="screen hidden">
+            <div class="list-header">
+                <h1>Audit Requests</h1>
+                <button class="btn btn-primary btn-back-home">Back to Home</button>
+            </div>
+            <div class="tabs">
+                <div class="tab">Upcoming</div>
+                <div class="tab">Pending</div>
+                <div class="tab active">All</div>
+            </div>
+            <div class="audit-grid">
+                <!-- Audit cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Audit Plan Acceptance Screen -->
+        <div id="audit-plan-acceptance-screen" class="screen hidden">
+            <div class="list-header">
+                <h1>Audit Plan Acceptance</h1>
+                <button class="btn btn-primary btn-back-home">Back to Home</button>
+            </div>
+            <div class="tabs">
+                <div class="tab">Upcoming</div>
+                <div class="tab active">Pending</div>
+                <div class="tab">All</div>
+            </div>
+            <div class="audit-grid" id="plan-acceptance-grid">
+                 <!-- Plan cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Audit Request Details Screen -->
+        <div id="audit-request-details-screen" class="screen hidden">
+            <a href="#" class="back-link" data-target="audit-requests-screen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to Audits
+            </a>
+            <div class="details-card">
+                <h3>Audit Request Details</h3>
+                <hr style="margin: 1rem 0; border-color: var(--border-color);">
+                <div class="details-grid">
+                    <div class="detail-item"><h4>Audit Number</h4><p>AUD-2024-001</p></div>
+                    <div class="detail-item"><h4>Audit Type</h4><p>Line Audit</p></div>
+                    <div class="detail-item"><h4>Process</h4><p>Heat Treatment</p></div>
+                    <div class="detail-item"><h4>Start Date</h4><p>2/26/2026</p></div>
+                    <div class="detail-item"><h4>End Date</h4><p>3/3/2026</p></div>
+                    <div class="detail-item"><h4>Auditor</h4><p>Norman Hemmings</p></div>
+                    <div class="detail-item"><h4>Auditee</h4><p>Supplier Inc.</p></div>
+                    <div class="detail-item"><h4>Status</h4><p>New</p></div>
+                </div>
+                <h3 class="questions-header">Auditor - Questions</h3>
+                <div class="question-item" data-target="audit-evaluation-screen">
+                    <h3>MACHINE</h3>
+                    <span class="count">4</span>
+                </div>
+                <div class="question-item">
+                    <h3>METHOD</h3>
+                    <span class="count">4</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Evaluation Screen -->
+        <div id="audit-evaluation-screen" class="screen hidden">
+            <a href="#" class="back-link" data-target="audit-request-details-screen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to Criteria
+            </a>
+            <div class="evaluation-header">
+                <h2>Machine</h2>
+                <p>Complete the checkpoints below.</p>
+            </div>
+            <div class="checkpoints-grid">
+                <div class="checkpoint-card">
+                    <div class="checkpoint-header">
+                        <span class="checkpoint-title">MACHINE</span>
+                        <label class="checkbox-label"><input type="checkbox" checked> Applicable</label>
+                    </div>
+                    <p class="checkpoint-question">Is the machine calibrated?</p>
+                    <div class="spec-box">
+                        <p>Specification</p>
+                        <p><span>Nominal: 100</span> <span>USL: 105</span> <span>LSL: 95</span></p>
+                    </div>
+                    <div class="form-group">
+                        <label>Observation</label>
+                        <textarea placeholder="Enter your observation..."></textarea>
+                    </div>
+                    <div class="score-group">
+                        <label>Score</label>
+                        <div class="score-options">
+                            <div class="score-option zero">0</div>
+                            <div class="score-option four active">4</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Disposition</label>
+                        <div class="disposition-group">
+                            <button class="disposition-btn">NC</button>
+                            <button class="disposition-btn">OFI</button>
+                            <button class="disposition-btn active">Compliant</button>
+                            <button class="disposition-btn">CAPA</button>
+                            <button class="disposition-btn">PRS</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="checkpoint-card">
+                    <div class="checkpoint-header">
+                        <span class="checkpoint-title">MACHINE</span>
+                        <label class="checkbox-label"><input type="checkbox" checked> Applicable</label>
+                    </div>
+                    <p class="checkpoint-question">Is routine maintenance performed on schedule?</p>
+                    <div class="spec-box">
+                        <p>Specification</p>
+                        <p>Maintenance logs must be current</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Observation</label>
+                        <textarea placeholder="Enter your observation..."></textarea>
+                    </div>
+                    <div class="score-group">
+                        <label>Score</label>
+                        <div class="score-options">
+                             <div class="score-option zero active">0</div>
+                            <div class="score-option four">4</div>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label>Disposition</label>
+                        <div class="disposition-group">
+                            <button class="disposition-btn active">NC</button>
+                            <button class="disposition-btn">OFI</button>
+                            <button class="disposition-btn">Compliant</button>
+                            <button class="disposition-btn">CAPA</button>
+                            <button class="disposition-btn">PRS</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="checkpoint-card disabled-content">
+                    <div class="checkpoint-header">
+                        <span class="checkpoint-title">MACHINE</span>
+                        <label class="checkbox-label"><input type="checkbox"> Applicable</label>
+                    </div>
+                    <div class="disabled-overlay"></div>
+                    <p class="checkpoint-question">Are safety guards in place and functional?</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const screens = document.querySelectorAll('.screen');
+            const navCards = document.querySelectorAll('.nav-card');
+            const backHomeBtns = document.querySelectorAll('.btn-back-home');
+            const backLinks = document.querySelectorAll('.back-link');
+
+            const auditRequests = [
+                { date: '3/3/2026', status: 'new', title: 'Supplier Quality Audit', type: 'Line Audit', process: 'Heat Treatment', auditor: 'Norman Hemmings', auditee: 'Supplier Inc.' },
+                { date: '2/21/2026', status: 'verified', title: 'Internal Process Audit', type: 'Process Audit', process: 'Assembly Line 5', auditor: 'Jane Doe', auditee: 'Internal Dept.' },
+                { date: '3/5/2026', status: 'new', title: 'Safety Compliance Check', type: 'Area Audit', process: 'Warehouse B', auditor: 'John Smith', auditee: 'Logistics Team' },
+                { date: '2/11/2026', status: 'execute', title: 'Past Due Audit', type: 'Process Audit', process: 'Molding', auditor: 'Peter Pan', auditee: 'Production Team' },
+            ];
+
+            const auditPlans = [
+                { title: 'Supplier Quality Audit', type: 'Line Audit', process: 'Heat Treatment', plant: 'Main', line: 'Alpha', auditor: 'Norman Hemmings', auditee: 'Supplier Inc.', start: '2/26/2026', end: '3/3/2026' },
+                { title: 'Safety Compliance Check', type: 'Area Audit', process: 'Warehouse B', plant: 'Main', line: 'Gamma', auditor: 'John Smith', auditee: 'Logistics Team', start: '2/28/2026', end: '3/6/2026' },
+            ];
+
+            function showScreen(screenId) {
+                screens.forEach(screen => {
+                    screen.classList.add('hidden');
+                });
+                const activeScreen = document.getElementById(screenId);
+                if (activeScreen) {
+                    activeScreen.classList.remove('hidden');
+                }
+            }
+
+            function navigateTo(event) {
+                const targetScreenId = event.currentTarget.dataset.target;
+                if (targetScreenId) {
+                    showScreen(targetScreenId);
+                }
+            }
+
+            navCards.forEach(card => card.addEventListener('click', navigateTo));
+            backHomeBtns.forEach(btn => btn.addEventListener('click', () => showScreen('home-screen')));
+            backLinks.forEach(link => link.addEventListener('click', navigateTo));
+
+            function createAuditRequestCard(audit) {
+                const statusClass = `status-${audit.status.toLowerCase().replace(' ', '-')}`;
+                return `
+                    <div class="audit-card" data-target="audit-request-details-screen">
+                        <div class="card-header">
+                            <div class="card-date">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                <span>${audit.date}</span>
+                            </div>
+                            <span class="card-status ${statusClass}">${audit.status}</span>
+                        </div>
+                        <div class="card-body">
+                            <h3>${audit.title}</h3>
+                            <div class="card-details">
+                                <p><strong>Type:</strong> ${audit.type}</p>
+                                <p><strong>Process:</strong> ${audit.process}</p>
+                                <p><strong>Auditor:</strong> ${audit.auditor}</p>
+                                <p><strong>Auditee:</strong> ${audit.auditee}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function createAuditPlanCard(plan, index) {
+                return `
+                <div class="audit-card" id="plan-card-${index}">
+                    <div class="card-body">
+                        <h3>${plan.title}</h3>
+                        <div class="card-details">
+                            <p><strong>Type:</strong> ${plan.type}</p>
+                            <p><strong>Process:</strong> ${plan.process}</p>
+                            <p><strong>Plant:</strong> ${plan.plant}</p>
+                            <p><strong>Auditor:</strong> ${plan.auditor}</p>
+                            <p><strong>Auditee:</strong> ${plan.auditee}</p>
+                            <p><strong>Start Date:</strong> ${plan.start}</p>
+                            <p><strong>End Date:</strong> ${plan.end}</p>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <div class="action-btn" data-action="accept">Accept</div>
+                        <div class="action-btn" data-action="reject">Reject</div>
+                        <div class="action-btn" data-action="request-change">Request Date Change</div>
+                    </div>
+                    <div class="card-footer hidden"></div>
+                </div>
+                `;
+            }
+
+            const auditGrid = document.querySelector('#audit-requests-screen .audit-grid');
+            auditGrid.innerHTML = auditRequests.map(createAuditRequestCard).join('');
+            auditGrid.querySelectorAll('.audit-card').forEach(card => card.addEventListener('click', navigateTo));
+            
+            const planGrid = document.getElementById('plan-acceptance-grid');
+            planGrid.innerHTML = auditPlans.map(createAuditPlanCard).join('');
+
+            planGrid.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('action-btn')) return;
+                
+                const btn = e.target;
+                const card = btn.closest('.audit-card');
+                const footer = card.querySelector('.card-footer');
+                const action = btn.dataset.action;
+
+                // Reset other buttons
+                card.querySelectorAll('.action-btn').forEach(b => b.classList.remove('selected', 'selected-red', 'selected-yellow'));
+
+                footer.innerHTML = '';
+                footer.classList.add('hidden');
+
+                if (action === 'accept') {
+                    btn.classList.add('selected');
+                    footer.innerHTML = `<button class="btn btn-submit">Submit</button>`;
+                    footer.classList.remove('hidden');
+                } else if (action === 'reject') {
+                    btn.classList.add('selected-red');
+                    footer.innerHTML = `
+                        <textarea placeholder="Rejection Reason"></textarea>
+                        <button class="btn btn-submit">Submit</button>
+                    `;
+                    footer.classList.remove('hidden');
+                } else if (action === 'request-change') {
+                    btn.classList.add('selected-yellow');
+                    footer.innerHTML = `
+                        <div class="date-inputs">
+                            <input type="text" placeholder="dd-mm-yyyy">
+                            <input type="text" placeholder="dd-mm-yyyy">
+                        </div>
+                        <textarea placeholder="Reason for Date Change"></textarea>
+                        <button class="btn btn-submit">Submit</button>
+                    `;
+                    footer.classList.remove('hidden');
+                }
+            });
+
+            document.querySelectorAll('.question-item').forEach(item => {
+                item.addEventListener('click', navigateTo);
+            });
+            
+            document.querySelectorAll('.checkpoint-card .checkbox-label input').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const card = e.target.closest('.checkpoint-card');
+                    if (e.target.checked) {
+                        card.classList.remove('disabled-content');
+                        card.querySelector('.disabled-overlay')?.remove();
+                    } else {
+                        card.classList.add('disabled-content');
+                        if (!card.querySelector('.disabled-overlay')) {
+                            const overlay = document.createElement('div');
+                            overlay.className = 'disabled-overlay';
+                            card.appendChild(overlay);
+                        }
+                    }
+                });
+            });
+
+            // Initialize view
+            showScreen('home-screen');
+        });
+    </script>
+</body>
+</html>
