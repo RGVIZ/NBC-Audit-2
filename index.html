@@ -1044,7 +1044,7 @@
 
                 const criterion = accordion.querySelector('h3').textContent;
                 renderCheckpoints(criterion);
-                navigateTo({ currentTarget: accordion }, criterion);
+                navigateTo({ currentTarget: accordion, dataset: { target: 'audit-evaluation-screen' } }, criterion);
             });
 
             function handleAccordionAction(criterion, action, accordionEl) {
