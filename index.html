@@ -921,8 +921,7 @@
                 updateBreadcrumbs();
             }
 
-            function navigateTo(event, title) {
-                const targetScreenId = event.currentTarget.dataset.target;
+            function navigateTo(targetScreenId, title) {
                 if (targetScreenId) {
                     showScreen(targetScreenId, title);
                 }
@@ -932,7 +931,8 @@
 
             navCards.forEach(card => card.addEventListener('click', (e) => {
                 const title = e.currentTarget.querySelector('h2').textContent;
-                navigateTo(e, title);
+                const targetScreenId = e.currentTarget.dataset.target;
+                navigateTo(targetScreenId, title);
             }));
 
             function createAuditRequestCard(audit) {
@@ -985,7 +985,10 @@
 
             const auditGrid = document.querySelector('#audit-requests-screen .audit-grid');
             auditGrid.innerHTML = auditRequests.map(createAuditRequestCard).join('');
-            auditGrid.querySelectorAll('.audit-card').forEach(card => card.addEventListener('click', (e) => navigateTo(e, 'View')));
+            auditGrid.querySelectorAll('.audit-card').forEach(card => card.addEventListener('click', (e) => {
+                const targetScreenId = e.currentTarget.dataset.target;
+                navigateTo(targetScreenId, 'View');
+            }));
             
             const planGrid = document.getElementById('plan-acceptance-grid');
             planGrid.innerHTML = auditPlans.map(createAuditPlanCard).join('');
@@ -1044,7 +1047,7 @@
 
                 const criterion = accordion.querySelector('h3').textContent;
                 renderCheckpoints(criterion);
-                navigateTo({ currentTarget: accordion, dataset: { target: 'audit-evaluation-screen' } }, criterion);
+                navigateTo('audit-evaluation-screen', criterion);
             });
 
             function handleAccordionAction(criterion, action, accordionEl) {
