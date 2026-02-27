@@ -1083,12 +1083,7 @@
                 }, 300);
             }
 
-            document.querySelectorAll('.question-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    renderCheckpoints('Machine'); // Example: Render 'Machine' checkpoints
-                    navigateTo(e);
-                });
-            });
+
 
             const checkpointsGrid = document.getElementById('checkpoints-grid');
             const reasonModal = document.getElementById('reason-modal');
