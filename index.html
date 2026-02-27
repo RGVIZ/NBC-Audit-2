@@ -985,7 +985,7 @@
 
             const auditGrid = document.querySelector('#audit-requests-screen .audit-grid');
             auditGrid.innerHTML = auditRequests.map(createAuditRequestCard).join('');
-            auditGrid.querySelectorAll('.audit-card').forEach(card => card.addEventListener('click', navigateTo));
+            auditGrid.querySelectorAll('.audit-card').forEach(card => card.addEventListener('click', (e) => navigateTo(e, 'View')));
             
             const planGrid = document.getElementById('plan-acceptance-grid');
             planGrid.innerHTML = auditPlans.map(createAuditPlanCard).join('');
@@ -1028,6 +1028,60 @@
                     footer.classList.remove('hidden');
                 }
             });
+
+            document.querySelector('.evaluation-accordion-group').addEventListener('click', (e) => {
+                const accordion = e.target.closest('.evaluation-accordion');
+                if (!accordion) return;
+
+                const actionButton = e.target.closest('.action-button-group button');
+                if (actionButton) {
+                    e.stopPropagation(); // Prevent navigation when a button is clicked
+                    const criterion = accordion.querySelector('h3').textContent;
+                    const action = actionButton.textContent;
+                    handleAccordionAction(criterion, action, accordion);
+                    return;
+                }
+
+                const criterion = accordion.querySelector('h3').textContent;
+                renderCheckpoints(criterion);
+                navigateTo({ currentTarget: accordion }, criterion);
+            });
+
+            function handleAccordionAction(criterion, action, accordionEl) {
+                const checkpoints = checkpointsData[criterion];
+                if (!checkpoints) return;
+
+                checkpoints.forEach(checkpoint => {
+                    switch (action) {
+                        case 'Max':
+                            checkpoint.score = 4;
+                            checkpoint.disposition = 'Compliant';
+                            checkpoint.applicable = true;
+                            break;
+                        case 'Min':
+                            checkpoint.score = 0;
+                            checkpoint.disposition = null;
+                            checkpoint.applicable = true;
+                            break;
+                        case 'NA':
+                            checkpoint.applicable = false;
+                            break;
+                    }
+                });
+
+                // Update progress bar
+                const progressBar = accordionEl.querySelector('.progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = '100%';
+                }
+                
+                // Optional: Add some visual feedback
+                accordionEl.style.transition = 'background-color 0.3s ease';
+                accordionEl.style.backgroundColor = '#e7f5ff';
+                setTimeout(() => {
+                    accordionEl.style.backgroundColor = '';
+                }, 300);
+            }
 
             document.querySelectorAll('.question-item').forEach(item => {
                 item.addEventListener('click', (e) => {
