@@ -6,7 +6,7 @@
     <title>PQA Audit</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --background-color: #f8f9fa;
@@ -19,7 +19,7 @@
             --accent-color-yellow: #ffc107;
             --accent-color-red: #dc3545;
             --button-text-light: #ffffff;
-            --font-family: 'Roboto', sans-serif;
+            --font-family: 'Inter', sans-serif;
         }
 
         * {
@@ -177,9 +177,9 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
             cursor: pointer;
-            transition: box-shadow 0.2s ease, transform 0.2s ease;
+            transition: box-shadow 0.2s ease;
             display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -235,33 +235,6 @@
         .card-details p strong {
             color: var(--primary-text);
             font-weight: 500;
-        }
-
-                .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            font-size: 0.9rem;
-        }
-
-        .breadcrumb-item {
-            color: var(--secondary-text);
-            text-decoration: none;
-        }
-
-        .breadcrumb-item:not(:last-child):hover {
-            text-decoration: underline;
-        }
-
-        .breadcrumb-item:last-child {
-            color: var(--primary-text);
-            font-weight: 500;
-            pointer-events: none;
-        }
-
-        .breadcrumb-separator {
-            color: var(--secondary-text);
         }
 
         /* --- Audit Plan Acceptance --- */
@@ -366,72 +339,10 @@
         .questions-header {
             font-size: 1.25rem;
             font-weight: 600;
-            padding: 1.25rem;
-            background: #e7f5ff;
-            color: #00529B;
-            border-radius: 8px;
-            margin: 2rem 0 1.5rem 0;
-        }
-
-        .evaluation-accordion-group {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .evaluation-accordion {
-            background: var(--card-background);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            padding: 1.25rem;
-            cursor: pointer;
-        }
-
-        .accordion-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .accordion-header h3 {
-            font-weight: 600;
-        }
-
-        .accordion-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .action-button-group {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .action-button-group button {
-            background: #f1f3f5;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .progress-bar-container {
-            height: 8px;
+            padding: 1rem 2rem;
             background: #e9ecef;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%; /* Will be updated with JS */
-            background: var(--accent-color-green);
-            transition: width 0.3s ease;
+            border-radius: 8px;
+            margin: 2rem -2rem;
         }
 
         .question-item {
@@ -468,16 +379,14 @@
 
         .checkpoints-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
         }
 
         .checkpoint-card {
-            background: var(--card-background);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            padding: 1.25rem;
         }
 
         .checkpoint-header {
@@ -534,9 +443,9 @@
 
         .form-group-highlight {
             background-color: #f8f9fa;
-            padding: 1rem;
+            padding: 0.75rem;
             border-radius: 8px;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .actual-value-input {
@@ -734,14 +643,14 @@
 
         <!-- Audit Requests Screen -->
         <div id="audit-requests-screen" class="screen hidden">
-            <div class="breadcrumb"></div>
             <div class="list-header">
                 <h1>Audit Requests</h1>
+                <button class="btn btn-primary btn-back-home">Back to Home</button>
             </div>
             <div class="tabs">
-                <div class="tab active">Upcoming</div>
+                <div class="tab">Upcoming</div>
                 <div class="tab">Pending</div>
-                <div class="tab">All</div>
+                <div class="tab active">All</div>
             </div>
             <div class="audit-grid">
                 <!-- Audit cards will be dynamically inserted here -->
@@ -750,11 +659,12 @@
 
         <!-- Audit Plan Acceptance Screen -->
         <div id="audit-plan-acceptance-screen" class="screen hidden">
-            <div class="breadcrumb"></div>
             <div class="list-header">
                 <h1>Audit Plan Acceptance</h1>
+                <button class="btn btn-primary btn-back-home">Back to Home</button>
             </div>
             <div class="tabs">
+                <div class="tab">Upcoming</div>
                 <div class="tab active">Pending</div>
                 <div class="tab">All</div>
             </div>
@@ -765,8 +675,10 @@
 
         <!-- Audit Request Details Screen -->
         <div id="audit-request-details-screen" class="screen hidden">
-            <div class="breadcrumb"></div>
-            
+            <a href="#" class="back-link" data-target="audit-requests-screen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to Audits
+            </a>
             <div class="details-card">
                 <h3>Audit Request Details</h3>
                 <hr style="margin: 1rem 0; border-color: var(--border-color);">
@@ -780,48 +692,24 @@
                     <div class="detail-item"><h4>Auditee</h4><p>Supplier Inc.</p></div>
                     <div class="detail-item"><h4>Status</h4><p>New</p></div>
                 </div>
-                <h3 class="questions-header">Audit Evaluation</h3>
-                <div class="evaluation-accordion-group">
-                    <div class="evaluation-accordion" data-target="audit-evaluation-screen">
-                        <div class="accordion-header">
-                            <h3>MACHINE</h3>
-                            <div class="accordion-actions">
-                                <div class="action-button-group">
-                                    <button>Max</button>
-                                    <button>Min</button>
-                                    <button>NA</button>
-                                </div>
-                                <span class="count">4</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 25%;"></div>
-                        </div>
-                    </div>
-                    <div class="evaluation-accordion">
-                         <div class="accordion-header">
-                            <h3>METHOD</h3>
-                            <div class="accordion-actions">
-                                <div class="action-button-group">
-                                    <button>Max</button>
-                                    <button>Min</button>
-                                    <button>NA</button>
-                                </div>
-                                <span class="count">4</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 0%;"></div>
-                        </div>
-                    </div>
+                <h3 class="questions-header">Auditor - Questions</h3>
+                <div class="question-item" data-target="audit-evaluation-screen">
+                    <h3>MACHINE</h3>
+                    <span class="count">4</span>
+                </div>
+                <div class="question-item">
+                    <h3>METHOD</h3>
+                    <span class="count">4</span>
                 </div>
             </div>
         </div>
 
         <!-- Audit Evaluation Screen -->
         <div id="audit-evaluation-screen" class="screen hidden">
-            <div class="breadcrumb"></div>
-            
+            <a href="#" class="back-link" data-target="audit-request-details-screen">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to Criteria
+            </a>
             <div class="evaluation-header">
                 <h2>Machine</h2>
                 <p>Complete the checkpoints below.</p>
@@ -850,13 +738,14 @@
             try {
             const screens = document.querySelectorAll('.screen');
             const navCards = document.querySelectorAll('.nav-card');
-            let breadcrumbTrail = [];
+            const backHomeBtns = document.querySelectorAll('.btn-back-home');
+            const backLinks = document.querySelectorAll('.back-link');
 
             const auditRequests = [
-                { startDate: '2/26/2026', endDate: '3/3/2026', status: 'new', title: 'Supplier Quality Audit', type: 'Line Audit', process: 'Heat Treatment', auditor: 'Norman Hemmings', auditee: 'Supplier Inc.' },
-                { startDate: '2/18/2026', endDate: '2/21/2026', status: 'verified', title: 'Internal Process Audit', type: 'Process Audit', process: 'Assembly Line 5', auditor: 'Jane Doe', auditee: 'Internal Dept.' },
-                { startDate: '3/1/2026', endDate: '3/5/2026', status: 'new', title: 'Safety Compliance Check', type: 'Area Audit', process: 'Warehouse B', auditor: 'John Smith', auditee: 'Logistics Team' },
-                { startDate: '2/9/2026', endDate: '2/11/2026', status: 'execute', title: 'Past Due Audit', type: 'Process Audit', process: 'Molding', auditor: 'Peter Pan', auditee: 'Production Team' },
+                { date: '3/3/2026', status: 'new', title: 'Supplier Quality Audit', type: 'Line Audit', process: 'Heat Treatment', auditor: 'Norman Hemmings', auditee: 'Supplier Inc.' },
+                { date: '2/21/2026', status: 'verified', title: 'Internal Process Audit', type: 'Process Audit', process: 'Assembly Line 5', auditor: 'Jane Doe', auditee: 'Internal Dept.' },
+                { date: '3/5/2026', status: 'new', title: 'Safety Compliance Check', type: 'Area Audit', process: 'Warehouse B', auditor: 'John Smith', auditee: 'Logistics Team' },
+                { date: '2/11/2026', status: 'execute', title: 'Past Due Audit', type: 'Process Audit', process: 'Molding', auditor: 'Peter Pan', auditee: 'Production Team' },
             ];
 
             const auditPlans = [
@@ -864,53 +753,7 @@
                 { title: 'Safety Compliance Check', type: 'Area Audit', process: 'Warehouse B', plant: 'Main', line: 'Gamma', auditor: 'John Smith', auditee: 'Logistics Team', start: '2/28/2026', end: '3/6/2026' },
             ];
 
-            function updateBreadcrumbs() {
-                const breadcrumbContainers = document.querySelectorAll('.breadcrumb');
-                breadcrumbContainers.forEach(container => {
-                    container.innerHTML = '';
-                    breadcrumbTrail.forEach((item, index) => {
-                        const isLast = index === breadcrumbTrail.length - 1;
-                        const el = document.createElement(isLast ? 'span' : 'a');
-                        if (!isLast) el.href = '#';
-                        el.textContent = item.title;
-                        el.dataset.screenId = item.id;
-                        el.dataset.index = index;
-                        el.classList.add('breadcrumb-item');
-                        
-                        if (!isLast) {
-                            el.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                const targetIndex = parseInt(e.target.dataset.index);
-                                const targetScreen = breadcrumbTrail[targetIndex];
-                                breadcrumbTrail = breadcrumbTrail.slice(0, targetIndex + 1);
-                                showScreen(targetScreen.id);
-                            });
-                        }
-                        
-                        container.appendChild(el);
-
-                        if (!isLast) {
-                            const separator = document.createElement('span');
-                            separator.textContent = '>';
-                            separator.classList.add('breadcrumb-separator');
-                            container.appendChild(separator);
-                        }
-                    });
-                });
-            }
-
-            function showScreen(screenId, screenTitle = null) {
-                if (screenTitle) {
-                    const existingIndex = breadcrumbTrail.findIndex(item => item.id === screenId);
-                    if (existingIndex !== -1) {
-                        breadcrumbTrail = breadcrumbTrail.slice(0, existingIndex + 1);
-                    } else {
-                        breadcrumbTrail.push({ id: screenId, title: screenTitle });
-                    }
-                } else if (screenId === 'home-screen') {
-                     breadcrumbTrail = [{ id: 'home-screen', title: 'Home' }];
-                }
-
+            function showScreen(screenId) {
                 screens.forEach(screen => {
                     screen.classList.add('hidden');
                 });
@@ -918,37 +761,35 @@
                 if (activeScreen) {
                     activeScreen.classList.remove('hidden');
                 }
-                updateBreadcrumbs();
             }
 
-            function navigateTo(targetScreenId, title) {
+            function navigateTo(event) {
+                const targetScreenId = event.currentTarget.dataset.target;
                 if (targetScreenId) {
-                    showScreen(targetScreenId, title);
+                    showScreen(targetScreenId);
                 }
             }
 
-            showScreen('home-screen', 'Home');
-
-            navCards.forEach(card => card.addEventListener('click', (e) => {
-                const title = e.currentTarget.querySelector('h2').textContent;
-                const targetScreenId = e.currentTarget.dataset.target;
-                navigateTo(targetScreenId, title);
-            }));
+            navCards.forEach(card => card.addEventListener('click', navigateTo));
+            backHomeBtns.forEach(btn => btn.addEventListener('click', () => showScreen('home-screen')));
+            backLinks.forEach(link => link.addEventListener('click', navigateTo));
 
             function createAuditRequestCard(audit) {
                 const statusClass = `status-${audit.status.toLowerCase().replace(' ', '-')}`;
                 return `
                     <div class="audit-card" data-target="audit-request-details-screen">
                         <div class="card-header">
-                            <h3>${audit.title}</h3>
+                            <div class="card-date">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                <span>${audit.date}</span>
+                            </div>
                             <span class="card-status ${statusClass}">${audit.status}</span>
                         </div>
                         <div class="card-body">
+                            <h3>${audit.title}</h3>
                             <div class="card-details">
                                 <p><strong>Type:</strong> ${audit.type}</p>
                                 <p><strong>Process:</strong> ${audit.process}</p>
-                                <p><strong>Start Date:</strong> ${audit.startDate}</p>
-                                <p><strong>End Date:</strong> ${audit.endDate}</p>
                                 <p><strong>Auditor:</strong> ${audit.auditor}</p>
                                 <p><strong>Auditee:</strong> ${audit.auditee}</p>
                             </div>
@@ -985,10 +826,7 @@
 
             const auditGrid = document.querySelector('#audit-requests-screen .audit-grid');
             auditGrid.innerHTML = auditRequests.map(createAuditRequestCard).join('');
-            auditGrid.querySelectorAll('.audit-card').forEach(card => card.addEventListener('click', (e) => {
-                const targetScreenId = e.currentTarget.dataset.target;
-                navigateTo(targetScreenId, 'View');
-            }));
+            auditGrid.querySelectorAll('.audit-card').forEach(card => card.addEventListener('click', navigateTo));
             
             const planGrid = document.getElementById('plan-acceptance-grid');
             planGrid.innerHTML = auditPlans.map(createAuditPlanCard).join('');
@@ -1032,61 +870,12 @@
                 }
             });
 
-            document.querySelector('.evaluation-accordion-group').addEventListener('click', (e) => {
-                const accordion = e.target.closest('.evaluation-accordion');
-                if (!accordion) return;
-
-                const actionButton = e.target.closest('.action-button-group button');
-                if (actionButton) {
-                    e.stopPropagation(); // Prevent navigation when a button is clicked
-                    const criterion = accordion.querySelector('h3').textContent;
-                    const action = actionButton.textContent;
-                    handleAccordionAction(criterion, action, accordion);
-                    return;
-                }
-
-                const criterion = accordion.querySelector('h3').textContent;
-                renderCheckpoints(criterion);
-                navigateTo('audit-evaluation-screen', criterion);
-            });
-
-            function handleAccordionAction(criterion, action, accordionEl) {
-                const checkpoints = checkpointsData[criterion];
-                if (!checkpoints) return;
-
-                checkpoints.forEach(checkpoint => {
-                    switch (action) {
-                        case 'Max':
-                            checkpoint.score = 4;
-                            checkpoint.disposition = 'Compliant';
-                            checkpoint.applicable = true;
-                            break;
-                        case 'Min':
-                            checkpoint.score = 0;
-                            checkpoint.disposition = null;
-                            checkpoint.applicable = true;
-                            break;
-                        case 'NA':
-                            checkpoint.applicable = false;
-                            break;
-                    }
+            document.querySelectorAll('.question-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    renderCheckpoints('Machine'); // Example: Render 'Machine' checkpoints
+                    navigateTo(e);
                 });
-
-                // Update progress bar
-                const progressBar = accordionEl.querySelector('.progress-bar');
-                if (progressBar) {
-                    progressBar.style.width = '100%';
-                }
-                
-                // Optional: Add some visual feedback
-                accordionEl.style.transition = 'background-color 0.3s ease';
-                accordionEl.style.backgroundColor = '#e7f5ff';
-                setTimeout(() => {
-                    accordionEl.style.backgroundColor = '';
-                }, 300);
-            }
-
-
+            });
 
             const checkpointsGrid = document.getElementById('checkpoints-grid');
             const reasonModal = document.getElementById('reason-modal');
@@ -1109,17 +898,20 @@
                     ? `<div class="spec-value"><span>Nominal: <strong>${checkpoint.specification.nominal}</strong></span> <span>USL: <strong>${checkpoint.specification.usl}</strong></span> <span>LSL: <strong>${checkpoint.specification.lsl}</strong></span></div>`
                     : `<div class="spec-value"><strong>${checkpoint.specification}</strong></div>`;
 
-                const actualValueHTML = `<div class="form-group">
+                const actualValueHTML = checkpoint.spec_type === 'variable'
+                    ? `<div class="form-group">
                            <label>Actual Value</label>
-                           <input type="text" class="actual-value-input" placeholder="Enter value">
-                       </div>`;
+                           <input type="number" class="actual-value-input" placeholder="Enter value" data-lsl="${checkpoint.specification.lsl}" data-usl="${checkpoint.specification.usl}">
+                       </div>`
+                    : '<div class="form-group"></div>'; // Empty div to maintain layout
 
                 return `
                 <div class="checkpoint-card" id="checkpoint-${checkpoint.id}" data-spec-type="${checkpoint.spec_type}">
                     <div class="checkpoint-header">
-                        <p class="checkpoint-question">${checkpoint.name}</p>
+                        <span class="checkpoint-title">${checkpoint.criteria}</span>
                         <label><input type="checkbox" class="applicable-checkbox" ${checkpoint.applicable ? 'checked' : ''}> Applicable</label>
                     </div>
+                    <p class="checkpoint-question">${checkpoint.name}</p>
                     <div class="spec-box">
                         <p>Specification</p>
                         ${specHTML}
