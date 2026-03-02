@@ -335,6 +335,31 @@
             font-weight: 500;
         }
 
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--secondary-text);
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s;
+        }
+        .btn-back:hover {
+            background: #f7fafc;
+            border-color: var(--secondary-text);
+            color: var(--primary-text);
+        }
+        .btn-back svg {
+            width: 16px;
+            height: 16px;
+        }
+
         .details-card, .evaluation-card {
             background: var(--card-background);
             border: 1px solid var(--border-color);
@@ -387,6 +412,13 @@
         }
         .question-item:hover {
             transform: scale(1.01);
+        }
+        .accordion-content-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 1.5rem;
         }
         .accordion-actions {
             display: flex;
@@ -490,6 +522,7 @@
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: var(--shadow-sm);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
         }
 
         .checkpoint-card.is-na {
@@ -786,6 +819,10 @@
         <!-- Audit Requests Screen -->
         <div id="audit-requests-screen" class="screen hidden">
             <div id="breadcrumb-ar" class="breadcrumb"></div>
+            <button class="btn-back" data-back-to="home-screen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back
+            </button>
             <div class="list-header">
                 <h1>Audit Requests</h1>
             </div>
@@ -802,6 +839,10 @@
         <!-- Audit Plan Acceptance Screen -->
         <div id="audit-plan-acceptance-screen" class="screen hidden">
             <div id="breadcrumb-apa" class="breadcrumb"></div>
+            <button class="btn-back" data-back-to="home-screen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back
+            </button>
             <div class="list-header">
                 <h1>Audit Plan Acceptance</h1>
             </div>
@@ -817,6 +858,10 @@
         <!-- Audit Request Details Screen -->
         <div id="audit-request-details-screen" class="screen hidden">
             <div id="breadcrumb-details" class="breadcrumb"></div>
+            <button class="btn-back" data-back-to="audit-requests-screen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back
+            </button>
             <div class="details-card">
                 <h3>Audit Request Details</h3>
                 <hr style="margin: 1rem 0; border-color: var(--border-color);">
@@ -840,6 +885,10 @@
         <!-- Audit Evaluation Screen -->
         <div id="audit-evaluation-screen" class="screen hidden">
             <div id="breadcrumb-evaluation" class="breadcrumb"></div>
+            <button class="btn-back" data-back-to="audit-request-details-screen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back
+            </button>
             <div class="evaluation-header">
                 <h2 id="evaluation-category-title">Machine</h2>
                 <p>Complete the checkpoints below.</p>
@@ -870,6 +919,7 @@
             const navCards = document.querySelectorAll('.nav-card');
             const backHomeBtns = document.querySelectorAll('.btn-back-home');
             const backLinks = document.querySelectorAll('.back-link');
+            const backBtns = document.querySelectorAll('.btn-back');
 
             const auditRequests = [
                 { start_date: '2/26/2026', end_date: '3/3/2026', status: 'new', title: 'Supplier Quality Audit', type: 'Line Audit', process: 'Heat Treatment', auditor: 'Norman Hemmings', auditee: 'Supplier Inc.' },
@@ -956,6 +1006,19 @@
             navCards.forEach(card => card.addEventListener('click', navigateTo));
             backHomeBtns.forEach(btn => btn.addEventListener('click', () => showScreen('home-screen')));
             backLinks.forEach(link => link.addEventListener('click', navigateTo));
+
+            backBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.dataset.backTo;
+                    if (target === 'audit-requests-screen') {
+                        showScreen('audit-requests-screen', [{label: 'Audit Request'}]);
+                    } else if (target === 'audit-request-details-screen') {
+                        showScreen('audit-request-details-screen', [{label: 'Audit Request', screen: 'audit-requests-screen'}, {label: 'View'}]);
+                    } else {
+                        showScreen(target);
+                    }
+                });
+            });
 
             function createAuditRequestCard(audit) {
                 const statusClass = `status-${audit.status.toLowerCase().replace(' ', '-')}`;
