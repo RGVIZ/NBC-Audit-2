@@ -6,20 +6,22 @@
     <title>PQA Audit</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --background-color: #f8f9fa;
+            --background-color: #f4f7fc;
             --card-background: #ffffff;
-            --primary-text: #212529;
-            --secondary-text: #6c757d;
-            --border-color: #dee2e6;
-            --accent-color-green: #198754;
-            --accent-color-blue: #0d6efd;
+            --primary-text: #333;
+            --secondary-text: #667;
+            --border-color: #e2e8f0;
+            --accent-color-green: #28a745;
+            --accent-color-blue: #007bff;
             --accent-color-yellow: #ffc107;
             --accent-color-red: #dc3545;
             --button-text-light: #ffffff;
-            --font-family: 'Inter', sans-serif;
+            --font-family: 'Roboto', sans-serif;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -177,9 +179,9 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            box-shadow: var(--shadow-sm);
             cursor: pointer;
-            transition: box-shadow 0.2s ease;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
             display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -311,12 +313,32 @@
             font-weight: 500;
         }
         
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .breadcrumb a {
+            color: var(--secondary-text);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .breadcrumb span {
+            color: var(--primary-text);
+            font-weight: 500;
+        }
+
         .details-card, .evaluation-card {
             background: var(--card-background);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 2rem;
             margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-md);
         }
 
         .details-grid {
@@ -346,12 +368,24 @@
         }
 
         .question-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid var(--border-color);
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background-color: var(--accent-color-green);
+            width: 0%;
+            transition: width 0.3s ease;
         }
         .question-item:last-child { border-bottom: none; }
         .question-item h3 { font-weight: 600; }
@@ -379,14 +413,16 @@
 
         .checkpoints-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 1.5rem;
         }
 
         .checkpoint-card {
+            background: var(--card-background);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 1.25rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
         }
 
         .checkpoint-header {
@@ -442,10 +478,10 @@
         }
 
         .form-group-highlight {
-            background-color: #f8f9fa;
-            padding: 0.75rem;
+            background-color: #f4f7fc;
+            padding: 1rem;
             border-radius: 8px;
-            margin-bottom: 0.5rem;
+            margin-top: 1rem;
         }
 
         .actual-value-input {
@@ -643,30 +679,29 @@
 
         <!-- Audit Requests Screen -->
         <div id="audit-requests-screen" class="screen hidden">
+            <div id="breadcrumb-ar" class="breadcrumb"></div>
             <div class="list-header">
                 <h1>Audit Requests</h1>
-                <button class="btn btn-primary btn-back-home">Back to Home</button>
             </div>
-            <div class="tabs">
-                <div class="tab">Upcoming</div>
-                <div class="tab">Pending</div>
-                <div class="tab active">All</div>
+            <div class="tabs" id="tabs-ar">
+                <div class="tab active" data-tab="upcoming">Upcoming</div>
+                <div class="tab" data-tab="pending">Pending</div>
+                <div class="tab" data-tab="all">All</div>
             </div>
-            <div class="audit-grid">
+            <div class="audit-grid" id="requests-grid">
                 <!-- Audit cards will be dynamically inserted here -->
             </div>
         </div>
 
         <!-- Audit Plan Acceptance Screen -->
         <div id="audit-plan-acceptance-screen" class="screen hidden">
+            <div id="breadcrumb-apa" class="breadcrumb"></div>
             <div class="list-header">
                 <h1>Audit Plan Acceptance</h1>
-                <button class="btn btn-primary btn-back-home">Back to Home</button>
             </div>
-            <div class="tabs">
-                <div class="tab">Upcoming</div>
-                <div class="tab active">Pending</div>
-                <div class="tab">All</div>
+            <div class="tabs" id="tabs-apa">
+                <div class="tab active" data-tab="pending">Pending</div>
+                <div class="tab" data-tab="all">All</div>
             </div>
             <div class="audit-grid" id="plan-acceptance-grid">
                  <!-- Plan cards will be dynamically inserted here -->
@@ -692,7 +727,7 @@
                     <div class="detail-item"><h4>Auditee</h4><p>Supplier Inc.</p></div>
                     <div class="detail-item"><h4>Status</h4><p>New</p></div>
                 </div>
-                <h3 class="questions-header">Auditor - Questions</h3>
+                <h3 class="questions-header">Audit Evaluation</h3>
                 <div class="question-item" data-target="audit-evaluation-screen">
                     <h3>MACHINE</h3>
                     <span class="count">4</span>
@@ -781,7 +816,7 @@
                         <div class="card-header">
                             <div class="card-date">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                <span>${audit.date}</span>
+                                <span>${audit.start_date} - ${audit.end_date}</span>
                             </div>
                             <span class="card-status ${statusClass}">${audit.status}</span>
                         </div>
@@ -903,7 +938,10 @@
                            <label>Actual Value</label>
                            <input type="number" class="actual-value-input" placeholder="Enter value" data-lsl="${checkpoint.specification.lsl}" data-usl="${checkpoint.specification.usl}">
                        </div>`
-                    : '<div class="form-group"></div>'; // Empty div to maintain layout
+                    : `<div class="form-group">
+                           <label>Actual Value</label>
+                           <input type="text" class="actual-value-input" placeholder="Enter value">
+                       </div>`;
 
                 return `
                 <div class="checkpoint-card" id="checkpoint-${checkpoint.id}" data-spec-type="${checkpoint.spec_type}">
