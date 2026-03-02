@@ -6,7 +6,7 @@
     <title>PQA Audit</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --background-color: #f4f7fa;
@@ -22,6 +22,7 @@
             --accent-color-teal: #2c7a7b;
             --button-text-light: #ffffff;
             --font-family: 'Roboto', sans-serif;
+            --font-family-inter: 'Inter', sans-serif;
             --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
             --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -522,7 +523,18 @@
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: var(--shadow-sm);
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            font-family: var(--font-family-inter);
+        }
+
+        .checkpoint-card input, 
+        .checkpoint-card textarea, 
+        .checkpoint-card button,
+        .checkpoint-card label,
+        .checkpoint-card .checkpoint-question,
+        .checkpoint-card .spec-value,
+        .checkpoint-card .spec-label,
+        .checkpoint-card .checkpoint-title {
+            font-family: var(--font-family-inter) !important;
         }
 
         .checkpoint-card.is-na {
