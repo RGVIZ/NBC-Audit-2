@@ -321,7 +321,7 @@
             align-items: center;
             gap: 0.5rem;
             margin-bottom: 1.5rem;
-            font-size: 0.9rem;
+            font-size: 1.1rem;
         }
         .breadcrumb a {
             color: var(--secondary-text);
@@ -453,11 +453,16 @@
         }
 
         .checkpoint-card {
-            background: var(--card-background);
+            background: #ffffff;
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: var(--shadow-sm);
+        }
+
+        .checkpoint-card.is-na {
+            opacity: 0.6;
+            background-color: #edf2f7;
         }
 
         .checkpoint-header {
@@ -483,36 +488,58 @@
             background: #ebf4ff;
             border: 1px solid #bee3f8;
             border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
+            padding: 1.25rem 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .spec-header {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #ebf4ff;
+            padding: 0 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-color-blue);
+            text-transform: uppercase;
+            border: 1px solid #bee3f8;
+            border-radius: 4px;
+        }
+
+        .spec-row {
             display: flex;
             justify-content: space-around;
-            align-items: center;
+            width: 100%;
         }
 
-        .spec-box p {
-            margin-bottom: 0;
-            font-size: 0.9rem;
+        .spec-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .spec-item .spec-label {
+            font-size: 0.75rem;
             color: var(--secondary-text);
-        }
-
-        .spec-box .spec-value {
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: #000000;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
             display: block;
-            margin-top: 0.2rem;
         }
 
-        .spec-label {
-            font-weight: 400;
-            color: var(--secondary-text);
+        .spec-item .spec-value {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #000000;
         }
 
-        .form-row {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+        .form-row.side-by-side {
+            flex-direction: row;
+            align-items: flex-end;
+            gap: 2rem;
+        }
+
+        .actual-value-group {
+            flex: 0 0 200px;
         }
 
         .form-group {
@@ -520,7 +547,7 @@
         }
 
         .form-group-highlight {
-            background-color: #ffffff;
+            background-color: #f8fafc;
             padding: 1rem;
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -1081,33 +1108,36 @@
                                 c.disposition = 'Compliant';
                                 c.applicable = true;
                             });
+                            renderAccordions();
                         } else if (action === 'min') {
                             data.forEach(c => {
                                 c.score = 0;
                                 c.disposition = 'NC';
                                 c.applicable = true;
                             });
+                            renderAccordions();
                         } else if (action === 'na') {
-                            data.forEach(c => {
-                                c.applicable = false;
-                                c.reason = 'Bulk NA assigned';
-                            });
+                            // Show modal for bulk NA
+                            currentAccordionCategory = cat;
+                            currentCheckpointCard = null; // Signal bulk action
+                            reasonModal.classList.remove('hidden');
                         }
-                        renderAccordions();
                     });
                 });
             }
 
+            let currentAccordionCategory = null;
+
             function createCheckpointCardHTML(checkpoint) {
                 const specHTML = checkpoint.spec_type === 'variable'
-                    ? `<div class="spec-value">
-                        <div style="text-align:center;"><span class="spec-label">Nominal</span><br><strong>${checkpoint.specification.nominal}</strong></div>
-                        <div style="text-align:center;"><span class="spec-label">USL</span><br><strong>${checkpoint.specification.usl}</strong></div>
-                        <div style="text-align:center;"><span class="spec-label">LSL</span><br><strong>${checkpoint.specification.lsl}</strong></div>
+                    ? `<div class="spec-row">
+                        <div class="spec-item"><span class="spec-label">LSL</span><div class="spec-value">${checkpoint.specification.lsl}</div></div>
+                        <div class="spec-item"><span class="spec-label">Nominal</span><div class="spec-value">${checkpoint.specification.nominal}</div></div>
+                        <div class="spec-item"><span class="spec-label">USL</span><div class="spec-value">${checkpoint.specification.usl}</div></div>
                        </div>`
-                    : `<div class="spec-value"><strong style="font-size: 1rem;">${checkpoint.specification}</strong></div>`;
+                    : `<div class="spec-row"><div class="spec-item"><div class="spec-value" style="font-size: 1rem;">${checkpoint.specification}</div></div></div>`;
 
-                const actualValueInput = `<div class="form-group">
+                const actualValueInput = `<div class="form-group actual-value-group">
                            <label>Actual Value</label>
                            <input type="${checkpoint.spec_type === 'variable' ? 'number' : 'text'}" 
                                   class="actual-value-input" 
@@ -1118,7 +1148,7 @@
                        </div>`;
 
                 return `
-                <div class="checkpoint-card" id="checkpoint-${checkpoint.id}" data-spec-type="${checkpoint.spec_type}">
+                <div class="checkpoint-card ${checkpoint.applicable ? '' : 'is-na'}" id="checkpoint-${checkpoint.id}" data-spec-type="${checkpoint.spec_type}">
                     <div class="checkpoint-header">
                         <span class="checkpoint-title">${checkpoint.criteria}</span>
                         <label style="font-size: 0.85rem; font-weight: 500; color: var(--secondary-text); cursor: pointer;">
@@ -1127,13 +1157,13 @@
                     </div>
                     <p class="checkpoint-question">${checkpoint.name}</p>
                     <div class="spec-box">
-                        <p class="spec-label" style="position: absolute; left: 1rem; top: 0.5rem; font-size: 0.7rem; text-transform: uppercase;">Specification</p>
+                        <div class="spec-header">Specification</div>
                         ${specHTML}
                     </div>
                     
                     <div class="checkpoint-body ${checkpoint.applicable ? '' : 'hidden'}">
                         <div class="form-group-highlight">
-                            <div class="form-row">
+                            <div class="form-row side-by-side">
                                 ${actualValueInput}
                                 <div class="form-group">
                                     <label>Score</label>
@@ -1299,10 +1329,12 @@
                     const checkpoint = checkpointsData[criteria].find(c => c.id === id);
 
                     if (!e.target.checked) {
+                        currentAccordionCategory = null;
                         reasonModal.classList.remove('hidden');
                     } else {
                         checkpoint.applicable = true;
                         checkpoint.reason = '';
+                        currentCheckpointCard.classList.remove('is-na');
                         const body = currentCheckpointCard.querySelector('.checkpoint-body');
                         if (body) body.classList.remove('hidden');
                         const reasonDisplay = currentCheckpointCard.querySelector('.na-reason-display');
@@ -1314,32 +1346,52 @@
 
             cancelReasonBtn.addEventListener('click', () => {
                 reasonModal.classList.add('hidden');
-                const checkbox = currentCheckpointCard.querySelector('.applicable-checkbox');
-                if (checkbox) checkbox.checked = true;
+                if (currentCheckpointCard) {
+                    const checkbox = currentCheckpointCard.querySelector('.applicable-checkbox');
+                    if (checkbox) checkbox.checked = true;
+                }
+                currentCheckpointCard = null;
+                currentAccordionCategory = null;
             });
 
             submitReasonBtn.addEventListener('click', () => {
-                if (!currentCheckpointCard) return;
-                reasonModal.classList.add('hidden');
                 const reason = reasonTextarea.value;
-                const id = parseInt(currentCheckpointCard.querySelector('.applicable-checkbox').dataset.id);
-                const criteria = document.getElementById('evaluation-category-title').textContent;
-                const checkpoint = checkpointsData[criteria].find(c => c.id === id);
                 
-                if (checkpoint) {
-                    checkpoint.applicable = false;
-                    checkpoint.reason = reason;
+                if (currentCheckpointCard) {
+                    // Individual checkpoint NA
+                    const id = parseInt(currentCheckpointCard.querySelector('.applicable-checkbox').dataset.id);
+                    const criteria = document.getElementById('evaluation-category-title').textContent;
+                    const checkpoint = checkpointsData[criteria].find(c => c.id === id);
+                    
+                    if (checkpoint) {
+                        checkpoint.applicable = false;
+                        checkpoint.reason = reason;
+                    }
+
+                    currentCheckpointCard.classList.add('is-na');
+                    const body = currentCheckpointCard.querySelector('.checkpoint-body');
+                    if (body) body.classList.add('hidden');
+
+                    const reasonDisplay = currentCheckpointCard.querySelector('.na-reason-display');
+                    if (reasonDisplay) {
+                        reasonDisplay.innerHTML = `<p><strong>Not Applicable:</strong> ${reason || 'Not specified'}</p>`;
+                        reasonDisplay.classList.remove('hidden');
+                    }
+                } else if (currentAccordionCategory) {
+                    // Bulk NA for accordion
+                    const data = checkpointsData[currentAccordionCategory];
+                    data.forEach(checkpoint => {
+                        checkpoint.applicable = false;
+                        checkpoint.reason = reason;
+                    });
+                    
+                    // If we are currently viewing this category, re-render checkpoints
+                    if (document.getElementById('evaluation-category-title').textContent === currentAccordionCategory) {
+                        renderCheckpoints(currentAccordionCategory);
+                    }
                 }
 
-                const body = currentCheckpointCard.querySelector('.checkpoint-body');
-                if (body) body.classList.add('hidden');
-
-                const reasonDisplay = currentCheckpointCard.querySelector('.na-reason-display');
-                if (reasonDisplay) {
-                    reasonDisplay.innerHTML = `<p><strong>Not Applicable:</strong> ${reason || 'Not specified'}</p>`;
-                    reasonDisplay.classList.remove('hidden');
-                }
-
+                reasonModal.classList.add('hidden');
                 reasonTextarea.value = '';
                 renderAccordions();
             });
