@@ -9,19 +9,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --background-color: #f4f7fc;
+            --background-color: #f4f7fa;
             --card-background: #ffffff;
-            --primary-text: #333;
-            --secondary-text: #667;
-            --border-color: #e2e8f0;
-            --accent-color-green: #28a745;
-            --accent-color-blue: #007bff;
-            --accent-color-yellow: #ffc107;
-            --accent-color-red: #dc3545;
+            --primary-text: #1a202c;
+            --secondary-text: #4a5568;
+            --border-color: #cbd5e0;
+            --accent-color-green: #2f855a;
+            --accent-color-blue: #2b6cb0;
+            --accent-color-yellow: #c05621;
+            --accent-color-red: #c53030;
+            --accent-color-purple: #6b46c1;
+            --accent-color-teal: #2c7a7b;
             --button-text-light: #ffffff;
             --font-family: 'Roboto', sans-serif;
-            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -179,9 +182,9 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-md);
             cursor: pointer;
-            transition: box-shadow 0.2s ease, transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -371,21 +374,53 @@
             background: var(--card-background);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.25rem;
             box-shadow: var(--shadow-sm);
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
         }
+        .question-item:hover {
+            transform: scale(1.01);
+        }
+        .accordion-actions {
+            display: flex;
+            gap: 0.5rem;
+            z-index: 2;
+        }
+        .accordion-btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .accordion-btn:hover { background: #f7fafc; }
+        .accordion-btn.max { color: var(--accent-color-green); border-color: var(--accent-color-green); }
+        .accordion-btn.min { color: var(--accent-color-red); border-color: var(--accent-color-red); }
+        .accordion-btn.na { color: var(--accent-color-purple); border-color: var(--accent-color-purple); }
+        
+        .accordion-btn.active.max { background: var(--accent-color-green); color: white; }
+        .accordion-btn.active.min { background: var(--accent-color-red); color: white; }
+        .accordion-btn.active.na { background: var(--accent-color-purple); color: white; }
+
         .progress-bar {
             position: absolute;
             bottom: 0;
             left: 0;
-            height: 4px;
-            background-color: var(--accent-color-green);
+            height: 6px;
+            background-color: var(--accent-color-teal);
             width: 0%;
-            transition: width 0.3s ease;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.7;
         }
         .question-item:last-child { border-bottom: none; }
         .question-item h3 { font-weight: 600; }
@@ -445,94 +480,102 @@
         }
 
         .spec-box {
-            background: #e0eaff;
-            border: 1px solid #b3caff;
+            background: #ebf4ff;
+            border: 1px solid #bee3f8;
             border-radius: 8px;
-            padding: 0.75rem;
+            padding: 1rem;
             margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
         }
 
         .spec-box p {
-            text-align: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            color: var(--secondary-text);
         }
 
         .spec-box .spec-value {
             font-weight: 700;
-            font-size: 1.1rem;
-            text-align: center;
+            font-size: 1.25rem;
+            color: #000000;
+            display: block;
+            margin-top: 0.2rem;
         }
 
-        .spec-box .spec-value strong {
-            color: #000000;
+        .spec-label {
+            font-weight: 400;
+            color: var(--secondary-text);
         }
 
         .form-row {
             display: flex;
-            gap: 1.5rem;
-            align-items: flex-start;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        .form-row .form-group {
-            flex: 1;
+        .form-group {
+            margin-bottom: 0.5rem;
         }
 
         .form-group-highlight {
-            background-color: #f4f7fc;
+            background-color: #ffffff;
             padding: 1rem;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
+            box-shadow: var(--shadow-sm);
         }
 
         .actual-value-input {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 6px;
             font-family: var(--font-family);
-        }
-
-        .spec-box span {
-            font-weight: 500;
-            color: var(--secondary-text);
-            margin-right: 1.5rem;
+            font-size: 1rem;
         }
 
         .form-group label {
             display: block;
-            font-weight: 500;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+            color: var(--secondary-text);
         }
 
         .form-group textarea {
             width: 100%;
-            min-height: 80px;
+            min-height: 60px;
             padding: 0.75rem;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 6px;
             font-family: var(--font-family);
+            font-size: 0.9rem;
         }
         
         .score-group {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 1rem 0;
+            margin: 0.5rem 0;
         }
 
         .score-options {
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
         }
 
         .score-option {
             border: 1px solid var(--border-color);
-            background: var(--card-background);
-            border-radius: 8px;
-            padding: 0.4rem 1rem;
-            font-size: 0.8rem;
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s;
         }
         .score-option.active.zero { background: var(--accent-color-red); color: white; border-color: var(--accent-color-red); }
         .score-option.active.four { background: var(--accent-color-green); color: white; border-color: var(--accent-color-green); }
@@ -545,11 +588,13 @@
 
         .disposition-btn, .action-type-btn {
             border: 1px solid var(--border-color);
-            background: var(--card-background);
-            border-radius: 8px;
-            padding: 0.4rem 1rem;
-            font-size: 0.8rem;
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.2s;
         }
         
         .disposition-btn.active.compliant, .action-btn.compliant { background-color: var(--accent-color-green); color: white; border-color: var(--accent-color-green); }
@@ -710,10 +755,7 @@
 
         <!-- Audit Request Details Screen -->
         <div id="audit-request-details-screen" class="screen hidden">
-            <a href="#" class="back-link" data-target="audit-requests-screen">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                Back to Audits
-            </a>
+            <div id="breadcrumb-details" class="breadcrumb"></div>
             <div class="details-card">
                 <h3>Audit Request Details</h3>
                 <hr style="margin: 1rem 0; border-color: var(--border-color);">
@@ -728,25 +770,17 @@
                     <div class="detail-item"><h4>Status</h4><p>New</p></div>
                 </div>
                 <h3 class="questions-header">Audit Evaluation</h3>
-                <div class="question-item" data-target="audit-evaluation-screen">
-                    <h3>MACHINE</h3>
-                    <span class="count">4</span>
-                </div>
-                <div class="question-item">
-                    <h3>METHOD</h3>
-                    <span class="count">4</span>
+                <div id="evaluation-accordions">
+                    <!-- Accordions will be dynamically inserted here -->
                 </div>
             </div>
         </div>
 
         <!-- Audit Evaluation Screen -->
         <div id="audit-evaluation-screen" class="screen hidden">
-            <a href="#" class="back-link" data-target="audit-request-details-screen">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                Back to Criteria
-            </a>
+            <div id="breadcrumb-evaluation" class="breadcrumb"></div>
             <div class="evaluation-header">
-                <h2>Machine</h2>
+                <h2 id="evaluation-category-title">Machine</h2>
                 <p>Complete the checkpoints below.</p>
             </div>
             <div class="checkpoints-grid" id="checkpoints-grid">
@@ -777,10 +811,10 @@
             const backLinks = document.querySelectorAll('.back-link');
 
             const auditRequests = [
-                { date: '3/3/2026', status: 'new', title: 'Supplier Quality Audit', type: 'Line Audit', process: 'Heat Treatment', auditor: 'Norman Hemmings', auditee: 'Supplier Inc.' },
-                { date: '2/21/2026', status: 'verified', title: 'Internal Process Audit', type: 'Process Audit', process: 'Assembly Line 5', auditor: 'Jane Doe', auditee: 'Internal Dept.' },
-                { date: '3/5/2026', status: 'new', title: 'Safety Compliance Check', type: 'Area Audit', process: 'Warehouse B', auditor: 'John Smith', auditee: 'Logistics Team' },
-                { date: '2/11/2026', status: 'execute', title: 'Past Due Audit', type: 'Process Audit', process: 'Molding', auditor: 'Peter Pan', auditee: 'Production Team' },
+                { start_date: '2/26/2026', end_date: '3/3/2026', status: 'new', title: 'Supplier Quality Audit', type: 'Line Audit', process: 'Heat Treatment', auditor: 'Norman Hemmings', auditee: 'Supplier Inc.' },
+                { start_date: '2/21/2026', end_date: '2/25/2026', status: 'verified', title: 'Internal Process Audit', type: 'Process Audit', process: 'Assembly Line 5', auditor: 'Jane Doe', auditee: 'Internal Dept.' },
+                { start_date: '3/5/2026', end_date: '3/10/2026', status: 'new', title: 'Safety Compliance Check', type: 'Area Audit', process: 'Warehouse B', auditor: 'John Smith', auditee: 'Logistics Team' },
+                { start_date: '2/11/2026', end_date: '2/15/2026', status: 'execute', title: 'Past Due Audit', type: 'Process Audit', process: 'Molding', auditor: 'Peter Pan', auditee: 'Production Team' },
             ];
 
             const auditPlans = [
@@ -788,20 +822,73 @@
                 { title: 'Safety Compliance Check', type: 'Area Audit', process: 'Warehouse B', plant: 'Main', line: 'Gamma', auditor: 'John Smith', auditee: 'Logistics Team', start: '2/28/2026', end: '3/6/2026' },
             ];
 
-            function showScreen(screenId) {
+            function updateBreadcrumbs(screenId, pathData = []) {
+                const breadcrumbContainers = {
+                    'audit-requests-screen': 'breadcrumb-ar',
+                    'audit-plan-acceptance-screen': 'breadcrumb-apa',
+                    'audit-request-details-screen': 'breadcrumb-details',
+                    'audit-evaluation-screen': 'breadcrumb-evaluation'
+                };
+
+                const containerId = breadcrumbContainers[screenId];
+                if (!containerId) return;
+
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                let html = `<a href="#" data-screen="home-screen">Home</a>`;
+                
+                pathData.forEach((item, index) => {
+                    html += ` <span class="separator">></span> `;
+                    if (index === pathData.length - 1) {
+                        html += `<span class="current">${item.label}</span>`;
+                    } else {
+                        html += `<a href="#" data-screen="${item.screen}" ${item.data ? `data-extra='${JSON.stringify(item.data)}'` : ''}>${item.label}</a>`;
+                    }
+                });
+
+                container.innerHTML = html;
+
+                container.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetScreen = link.dataset.screen;
+                        const extraData = link.dataset.extra ? JSON.parse(link.dataset.extra) : null;
+                        
+                        if (targetScreen === 'audit-request-details-screen') {
+                            showScreen('audit-request-details-screen', [{label: 'Audit Request', screen: 'audit-requests-screen'}, {label: 'View'}]);
+                        } else if (targetScreen === 'audit-requests-screen') {
+                            showScreen('audit-requests-screen', [{label: 'Audit Request'}]);
+                        } else {
+                            showScreen(targetScreen);
+                        }
+                    });
+                });
+            }
+
+            function showScreen(screenId, breadcrumbPath = []) {
                 screens.forEach(screen => {
                     screen.classList.add('hidden');
                 });
                 const activeScreen = document.getElementById(screenId);
                 if (activeScreen) {
                     activeScreen.classList.remove('hidden');
+                    updateBreadcrumbs(screenId, breadcrumbPath);
                 }
             }
 
             function navigateTo(event) {
                 const targetScreenId = event.currentTarget.dataset.target;
                 if (targetScreenId) {
-                    showScreen(targetScreenId);
+                    let path = [];
+                    if (targetScreenId === 'audit-requests-screen') {
+                        path = [{label: 'Audit Request'}];
+                    } else if (targetScreenId === 'audit-plan-acceptance-screen') {
+                        path = [{label: 'Audit Plan Acceptance'}];
+                    } else if (targetScreenId === 'audit-request-details-screen') {
+                        path = [{label: 'Audit Request', screen: 'audit-requests-screen'}, {label: 'View'}];
+                    }
+                    showScreen(targetScreenId, path);
                 }
             }
 
@@ -838,7 +925,7 @@
                 <div class="audit-card" id="plan-card-${index}">
                     <div class="card-body">
                         <h3>${plan.title}</h3>
-                        <div class="card-details">
+                        <div class="card-details" style="grid-template-columns: repeat(2, 1fr);">
                             <p><strong>Type:</strong> ${plan.type}</p>
                             <p><strong>Process:</strong> ${plan.process}</p>
                             <p><strong>Plant:</strong> ${plan.plant}</p>
@@ -921,86 +1008,175 @@
 
             const checkpointsData = {
                 'Machine': [
-                    { id: 1, criteria: 'Machine', name: 'Is the machine calibrated?', spec_type: 'variable', specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true, reason: '' },
-                    { id: 2, criteria: 'Machine', name: 'Are safety guards in place and functional?', spec_type: 'variable', specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true, reason: '' },
-                    { id: 3, criteria: 'Machine', name: 'Is routine maintenance performed on schedule?', spec_type: 'attribute', specification: 'Maintenance logs must be current', applicable: true, reason: '' },
-                    { id: 4, criteria: 'Machine', name: 'Does the machine temperature meet specification?', spec_type: 'attribute', specification: 'Temperature between 80-90°C', applicable: true, reason: '' },
+                    { id: 1, criteria: 'Machine', name: 'Is the machine calibrated?', spec_type: 'variable', specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 2, criteria: 'Machine', name: 'Are safety guards in place and functional?', spec_type: 'variable', specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 3, criteria: 'Machine', name: 'Is routine maintenance performed on schedule?', spec_type: 'attribute', specification: 'Maintenance logs must be current', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 4, criteria: 'Machine', name: 'Does the machine temperature meet specification?', spec_type: 'attribute', specification: 'Temperature between 80-90°C', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                ],
+                'Man': [
+                    { id: 5, criteria: 'Man', name: 'Is the operator trained?', spec_type: 'attribute', specification: 'Training records must be valid', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 6, criteria: 'Man', name: 'Does the operator follow SOP?', spec_type: 'attribute', specification: 'SOP adherence required', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                ],
+                'Material': [
+                    { id: 7, criteria: 'Material', name: 'Is the material grade correct?', spec_type: 'attribute', specification: 'Grade 304 Stainless Steel', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                ],
+                'Method': [
+                    { id: 8, criteria: 'Method', name: 'Is the process flow followed?', spec_type: 'attribute', specification: 'Flow chart adherence', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                 ]
             };
 
+            function calculateProgress(criteria) {
+                const data = checkpointsData[criteria] || [];
+                if (data.length === 0) return 0;
+                const completed = data.filter(c => !c.applicable || (c.score !== null && c.disposition !== null)).length;
+                return Math.round((completed / data.length) * 100);
+            }
+
+            function renderAccordions() {
+                const container = document.getElementById('evaluation-accordions');
+                const categories = Object.keys(checkpointsData);
+                
+                container.innerHTML = categories.map(cat => {
+                    const progress = calculateProgress(cat);
+                    return `
+                    <div class="question-item" data-category="${cat}">
+                        <div style="flex: 1;">
+                            <h3>${cat}</h3>
+                            <div class="progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="accordion-actions">
+                            <button class="accordion-btn max" data-action="max" data-category="${cat}">Max</button>
+                            <button class="accordion-btn min" data-action="min" data-category="${cat}">Min</button>
+                            <button class="accordion-btn na" data-action="na" data-category="${cat}">NA</button>
+                            <div class="count">${checkpointsData[cat].length}</div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+
+                container.querySelectorAll('.question-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        if (e.target.closest('.accordion-btn')) return;
+                        const cat = item.dataset.category;
+                        document.getElementById('evaluation-category-title').textContent = cat;
+                        renderCheckpoints(cat);
+                        showScreen('audit-evaluation-screen', [
+                            {label: 'Audit Request', screen: 'audit-requests-screen'}, 
+                            {label: 'View', screen: 'audit-request-details-screen'}, 
+                            {label: cat}
+                        ]);
+                    });
+                });
+
+                container.querySelectorAll('.accordion-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const action = btn.dataset.action;
+                        const cat = btn.dataset.category;
+                        const data = checkpointsData[cat];
+
+                        if (action === 'max') {
+                            data.forEach(c => {
+                                c.score = 4;
+                                c.disposition = 'Compliant';
+                                c.applicable = true;
+                            });
+                        } else if (action === 'min') {
+                            data.forEach(c => {
+                                c.score = 0;
+                                c.disposition = 'NC';
+                                c.applicable = true;
+                            });
+                        } else if (action === 'na') {
+                            data.forEach(c => {
+                                c.applicable = false;
+                                c.reason = 'Bulk NA assigned';
+                            });
+                        }
+                        renderAccordions();
+                    });
+                });
+            }
+
             function createCheckpointCardHTML(checkpoint) {
                 const specHTML = checkpoint.spec_type === 'variable'
-                    ? `<div class="spec-value"><span>Nominal: <strong>${checkpoint.specification.nominal}</strong></span> <span>USL: <strong>${checkpoint.specification.usl}</strong></span> <span>LSL: <strong>${checkpoint.specification.lsl}</strong></span></div>`
-                    : `<div class="spec-value"><strong>${checkpoint.specification}</strong></div>`;
-
-                const actualValueHTML = checkpoint.spec_type === 'variable'
-                    ? `<div class="form-group">
-                           <label>Actual Value</label>
-                           <input type="number" class="actual-value-input" placeholder="Enter value" data-lsl="${checkpoint.specification.lsl}" data-usl="${checkpoint.specification.usl}">
+                    ? `<div class="spec-value">
+                        <div style="text-align:center;"><span class="spec-label">Nominal</span><br><strong>${checkpoint.specification.nominal}</strong></div>
+                        <div style="text-align:center;"><span class="spec-label">USL</span><br><strong>${checkpoint.specification.usl}</strong></div>
+                        <div style="text-align:center;"><span class="spec-label">LSL</span><br><strong>${checkpoint.specification.lsl}</strong></div>
                        </div>`
-                    : `<div class="form-group">
+                    : `<div class="spec-value"><strong style="font-size: 1rem;">${checkpoint.specification}</strong></div>`;
+
+                const actualValueInput = `<div class="form-group">
                            <label>Actual Value</label>
-                           <input type="text" class="actual-value-input" placeholder="Enter value">
+                           <input type="${checkpoint.spec_type === 'variable' ? 'number' : 'text'}" 
+                                  class="actual-value-input" 
+                                  placeholder="Enter value" 
+                                  value="${checkpoint.actual_value || ''}"
+                                  data-id="${checkpoint.id}"
+                                  ${checkpoint.spec_type === 'variable' ? `data-lsl="${checkpoint.specification.lsl}" data-usl="${checkpoint.specification.usl}"` : ''}>
                        </div>`;
 
                 return `
                 <div class="checkpoint-card" id="checkpoint-${checkpoint.id}" data-spec-type="${checkpoint.spec_type}">
                     <div class="checkpoint-header">
                         <span class="checkpoint-title">${checkpoint.criteria}</span>
-                        <label><input type="checkbox" class="applicable-checkbox" ${checkpoint.applicable ? 'checked' : ''}> Applicable</label>
+                        <label style="font-size: 0.85rem; font-weight: 500; color: var(--secondary-text); cursor: pointer;">
+                            <input type="checkbox" class="applicable-checkbox" ${checkpoint.applicable ? 'checked' : ''} data-id="${checkpoint.id}"> Applicable
+                        </label>
                     </div>
                     <p class="checkpoint-question">${checkpoint.name}</p>
                     <div class="spec-box">
-                        <p>Specification</p>
+                        <p class="spec-label" style="position: absolute; left: 1rem; top: 0.5rem; font-size: 0.7rem; text-transform: uppercase;">Specification</p>
                         ${specHTML}
                     </div>
                     
                     <div class="checkpoint-body ${checkpoint.applicable ? '' : 'hidden'}">
                         <div class="form-group-highlight">
                             <div class="form-row">
-                                ${actualValueHTML}
+                                ${actualValueInput}
                                 <div class="form-group">
                                     <label>Score</label>
                                     <div class="score-options">
-                                        <button class="score-option zero" data-value="0">0</button>
-                                        <button class="score-option four" data-value="4">4</button>
+                                        <button class="score-option zero ${checkpoint.score === 0 ? 'active' : ''}" data-value="0" data-id="${checkpoint.id}">0</button>
+                                        <button class="score-option four ${checkpoint.score === 4 ? 'active' : ''}" data-value="4" data-id="${checkpoint.id}">4</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group-highlight">
-                             <div class="form-group observation-group">
+                        <div class="form-group-highlight" style="margin-top: 0.75rem;">
+                             <div class="form-group observation-group" style="margin-bottom: 0;">
                                 <label>Observation</label>
-                                <textarea placeholder="Enter your observation..."></textarea>
+                                <textarea placeholder="Enter your observation..." style="min-height: 50px;"></textarea>
                                 <button class="mic-btn">
                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
                                 </button>
                             </div>
                         </div>
 
-                        <div class="form-group-highlight">
-                            <div class="form-row">
-                                <div class="form-group">
+                        <div class="form-group-highlight" style="margin-top: 0.75rem;">
+                            <div class="form-row" style="flex-direction: row; gap: 1.5rem;">
+                                <div class="form-group" style="flex: 1;">
                                     <label>Disposition</label>
                                     <div class="disposition-group">
-                                        <button class="disposition-btn" data-value="NC">NC</button>
-                                        <button class="disposition-btn" data-value="OFI">OFI</button>
-                                        <button class="disposition-btn" data-value="Compliant">Compliant</button>
+                                        <button class="disposition-btn ${checkpoint.disposition === 'NC' ? 'active nc' : ''}" data-value="NC" data-id="${checkpoint.id}">NC</button>
+                                        <button class="disposition-btn ${checkpoint.disposition === 'OFI' ? 'active ofi' : ''}" data-value="OFI" data-id="${checkpoint.id}">OFI</button>
+                                        <button class="disposition-btn ${checkpoint.disposition === 'Compliant' ? 'active compliant' : ''}" data-value="Compliant" data-id="${checkpoint.id}">Compliant</button>
                                     </div>
                                 </div>
-                                 <div class="form-group">
+                                 <div class="form-group" style="flex: 1;">
                                     <label>Action Type</label>
                                     <div class="disposition-group">
-                                        <button class="action-type-btn" data-value="CAPA">CAPA</button>
-                                        <button class="action-type-btn" data-value="PRS">PRS</button>
+                                        <button class="action-type-btn" data-value="CAPA" data-id="${checkpoint.id}">CAPA</button>
+                                        <button class="action-type-btn" data-value="PRS" data-id="${checkpoint.id}">PRS</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group-highlight">
-                            <div class="form-group">
+                        <div class="form-group-highlight" style="margin-top: 0.75rem;">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label>Supporting Evidences</label>
                                 <div class="evidence-group">
                                     <button class="evidence-btn" title="Camera"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></button>
@@ -1022,6 +1198,8 @@
                 const data = checkpointsData[criteria] || [];
                 checkpointsGrid.innerHTML = data.map(createCheckpointCardHTML).join('');
             }
+
+            renderAccordions();
 
             function updateCheckpointState(card, updates) {
                 const scoreOptions = card.querySelector('.score-options');
@@ -1054,17 +1232,29 @@
             checkpointsGrid.addEventListener('input', (e) => {
                 if (e.target.classList.contains('actual-value-input')) {
                     const card = e.target.closest('.checkpoint-card');
-                    const lsl = parseFloat(e.target.dataset.lsl);
-                    const usl = parseFloat(e.target.dataset.usl);
-                    const value = parseFloat(e.target.value);
+                    const id = parseInt(e.target.dataset.id);
+                    const criteria = document.getElementById('evaluation-category-title').textContent;
+                    const checkpoint = checkpointsData[criteria].find(c => c.id === id);
+                    
+                    checkpoint.actual_value = e.target.value;
 
-                    if (!isNaN(value)) {
-                        if (value >= lsl && value <= usl) {
-                            updateCheckpointState(card, { score: 4, disposition: 'Compliant' });
-                        } else {
-                            updateCheckpointState(card, { score: 0 });
+                    if (checkpoint.spec_type === 'variable') {
+                        const lsl = parseFloat(e.target.dataset.lsl);
+                        const usl = parseFloat(e.target.dataset.usl);
+                        const value = parseFloat(e.target.value);
+
+                        if (!isNaN(value)) {
+                            if (value >= lsl && value <= usl) {
+                                checkpoint.score = 4;
+                                checkpoint.disposition = 'Compliant';
+                            } else {
+                                checkpoint.score = 0;
+                                checkpoint.disposition = 'NC';
+                            }
                         }
                     }
+                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition });
+                    renderAccordions(); // Update progress
                 }
             });
 
@@ -1072,17 +1262,26 @@
                 const target = e.target;
                 const card = target.closest('.checkpoint-card');
                 if (!card) return;
+                
+                const id = parseInt(target.dataset.id);
+                const criteria = document.getElementById('evaluation-category-title').textContent;
+                const checkpoint = checkpointsData[criteria]?.find(c => c.id === id);
 
                 if (target.closest('.score-option')) {
                     const value = parseInt(target.closest('.score-option').dataset.value);
+                    checkpoint.score = value;
                     if (value === 4) {
-                        updateCheckpointState(card, { score: 4, disposition: 'Compliant' });
+                        checkpoint.disposition = 'Compliant';
                     } else {
-                        updateCheckpointState(card, { score: 0 });
+                        checkpoint.disposition = 'NC';
                     }
+                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition });
+                    renderAccordions();
                 } else if (target.closest('.disposition-btn')) {
                     const value = target.closest('.disposition-btn').dataset.value;
+                    checkpoint.disposition = value;
                     updateCheckpointState(card, { disposition: value });
+                    renderAccordions();
                 } else if (target.closest('.action-type-btn')) {
                     if(target.closest('.action-type-btn').disabled) return;
                     card.querySelectorAll('.action-type-btn').forEach(b => b.classList.remove('active', 'capa', 'prs'));
@@ -1095,18 +1294,20 @@
             checkpointsGrid.addEventListener('change', (e) => {
                 if (e.target.classList.contains('applicable-checkbox')) {
                     currentCheckpointCard = e.target.closest('.checkpoint-card');
-                    const checkpointId = parseInt(currentCheckpointCard.id.split('-')[1]);
-                    const checkpointData = checkpointsData['Machine'].find(c => c.id === checkpointId);
+                    const id = parseInt(e.target.dataset.id);
+                    const criteria = document.getElementById('evaluation-category-title').textContent;
+                    const checkpoint = checkpointsData[criteria].find(c => c.id === id);
 
                     if (!e.target.checked) {
                         reasonModal.classList.remove('hidden');
                     } else {
-                        checkpointData.applicable = true;
-                        checkpointData.reason = '';
+                        checkpoint.applicable = true;
+                        checkpoint.reason = '';
                         const body = currentCheckpointCard.querySelector('.checkpoint-body');
                         if (body) body.classList.remove('hidden');
                         const reasonDisplay = currentCheckpointCard.querySelector('.na-reason-display');
                         if (reasonDisplay) reasonDisplay.classList.add('hidden');
+                        renderAccordions();
                     }
                 }
             });
@@ -1118,15 +1319,16 @@
             });
 
             submitReasonBtn.addEventListener('click', () => {
-                if (!currentCheckpointCard) return; // Prevent errors if card is not set
+                if (!currentCheckpointCard) return;
                 reasonModal.classList.add('hidden');
                 const reason = reasonTextarea.value;
-                const checkpointId = parseInt(currentCheckpointCard.id.split('-')[1]);
-                const checkpointData = checkpointsData['Machine'].find(c => c.id === checkpointId);
+                const id = parseInt(currentCheckpointCard.querySelector('.applicable-checkbox').dataset.id);
+                const criteria = document.getElementById('evaluation-category-title').textContent;
+                const checkpoint = checkpointsData[criteria].find(c => c.id === id);
                 
-                if (checkpointData) {
-                    checkpointData.applicable = false;
-                    checkpointData.reason = reason;
+                if (checkpoint) {
+                    checkpoint.applicable = false;
+                    checkpoint.reason = reason;
                 }
 
                 const body = currentCheckpointCard.querySelector('.checkpoint-body');
@@ -1139,6 +1341,7 @@
                 }
 
                 reasonTextarea.value = '';
+                renderAccordions();
             });
 
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
