@@ -422,7 +422,39 @@
             transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0.7;
         }
-        .question-item:last-child { border-bottom: none; }
+        .question-item.is-na {
+            background-color: #edf2f7;
+            border-color: #cbd5e0;
+            cursor: default;
+            transform: none !important;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .question-item.is-na .accordion-content-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0.6;
+        }
+
+        .mark-applicable-btn {
+            margin-top: 0.75rem;
+            padding: 0.5rem;
+            background: #ffffff;
+            border: 1px solid var(--accent-color-blue);
+            color: var(--accent-color-blue);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .mark-applicable-btn:hover {
+            background: #e0eaff;
+        }
         .question-item h3 { font-weight: 600; }
         .question-item .count {
             background: #e9ecef;
@@ -509,13 +541,14 @@
 
         .spec-row {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
+            gap: 2rem;
             width: 100%;
         }
 
         .spec-item {
             text-align: center;
-            flex: 1;
+            flex: 0 1 auto;
         }
 
         .spec-item .spec-label {
@@ -533,13 +566,14 @@
         }
 
         .form-row.side-by-side {
+            display: flex;
             flex-direction: row;
-            align-items: flex-end;
-            gap: 2rem;
+            align-items: flex-start;
+            gap: 1.5rem;
         }
 
         .actual-value-group {
-            flex: 0 0 200px;
+            flex: 0 0 180px;
         }
 
         .form-group {
@@ -1065,25 +1099,34 @@
                 
                 container.innerHTML = categories.map(cat => {
                     const progress = calculateProgress(cat);
+                    const isAllNA = checkpointsData[cat].every(c => !c.applicable);
+                    const naReason = isAllNA ? (checkpointsData[cat][0]?.reason || 'Not applicable') : '';
+                    
                     return `
-                    <div class="question-item" data-category="${cat}">
-                        <div style="flex: 1;">
-                            <h3>${cat}</h3>
-                            <div class="progress-bar" style="width: ${progress}%"></div>
+                    <div class="question-item ${isAllNA ? 'is-na' : ''}" data-category="${cat}">
+                        <div class="accordion-content-wrapper">
+                            <div style="flex: 1;">
+                                <h3>${cat}</h3>
+                                ${!isAllNA ? `<div class="progress-bar" style="width: ${progress}%"></div>` : ''}
+                                ${isAllNA ? `<p style="font-size: 0.8rem; margin-top: 0.25rem;">Reason: ${naReason}</p>` : ''}
+                            </div>
+                            <div class="accordion-actions">
+                                <button class="accordion-btn max" data-action="max" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Max</button>
+                                <button class="accordion-btn min" data-action="min" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Min</button>
+                                <button class="accordion-btn na" data-action="na" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>NA</button>
+                                <div class="count">${checkpointsData[cat].length}</div>
+                            </div>
                         </div>
-                        <div class="accordion-actions">
-                            <button class="accordion-btn max" data-action="max" data-category="${cat}">Max</button>
-                            <button class="accordion-btn min" data-action="min" data-category="${cat}">Min</button>
-                            <button class="accordion-btn na" data-action="na" data-category="${cat}">NA</button>
-                            <div class="count">${checkpointsData[cat].length}</div>
-                        </div>
+                        ${isAllNA ? `<button class="mark-applicable-btn" data-category="${cat}">Mark As Applicable</button>` : ''}
                     </div>
                     `;
                 }).join('');
 
                 container.querySelectorAll('.question-item').forEach(item => {
                     item.addEventListener('click', (e) => {
-                        if (e.target.closest('.accordion-btn')) return;
+                        if (e.target.closest('.accordion-btn') || e.target.closest('.mark-applicable-btn')) return;
+                        if (item.classList.contains('is-na')) return; // Disable click for NA
+
                         const cat = item.dataset.category;
                         document.getElementById('evaluation-category-title').textContent = cat;
                         renderCheckpoints(cat);
@@ -1092,6 +1135,18 @@
                             {label: 'View', screen: 'audit-request-details-screen'}, 
                             {label: cat}
                         ]);
+                    });
+                });
+
+                container.querySelectorAll('.mark-applicable-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const cat = btn.dataset.category;
+                        checkpointsData[cat].forEach(c => {
+                            c.applicable = true;
+                            c.reason = '';
+                        });
+                        renderAccordions();
                     });
                 });
 
@@ -1186,7 +1241,7 @@
                         </div>
 
                         <div class="form-group-highlight" style="margin-top: 0.75rem;">
-                            <div class="form-row" style="flex-direction: row; gap: 1.5rem;">
+                            <div class="form-row side-by-side">
                                 <div class="form-group" style="flex: 1;">
                                     <label>Disposition</label>
                                     <div class="disposition-group">
