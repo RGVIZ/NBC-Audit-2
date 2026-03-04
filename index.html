@@ -586,28 +586,51 @@
 
         .spec-row {
             display: flex;
-            justify-content: center;
-            gap: 2rem;
-            width: 100%;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
         }
 
         .spec-item {
-            text-align: center;
-            flex: 0 1 auto;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .spec-item.type-select {
+            flex: 1.5;
+            min-width: 150px;
         }
 
         .spec-item .spec-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--secondary-text);
             text-transform: uppercase;
             margin-bottom: 0.25rem;
             display: block;
+            font-weight: 700;
         }
 
-        .spec-item .spec-value {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: #000000;
+        .spec-input, .spec-select {
+            width: 100%;
+            padding: 0.4rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: white;
+            font-family: var(--font-family-inter);
+        }
+
+        .spec-input:focus, .spec-select:focus {
+            outline: none;
+            border-color: var(--accent-color-blue);
+            box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.1);
+        }
+
+        .spec-input[readonly] {
+            background-color: #f7fafc;
+            cursor: not-allowed;
+            color: #718096;
         }
 
         .form-row.side-by-side {
@@ -1144,8 +1167,8 @@
 
             const checkpointsData = {
                 'Machine': [
-                    { id: 1, criteria: 'Machine', name: 'Is the machine calibrated?', spec_type: 'variable', specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
-                    { id: 2, criteria: 'Machine', name: 'Are safety guards in place and functional?', spec_type: 'variable', specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 1, criteria: 'Machine', name: 'Is the machine calibrated?', spec_type: 'variable', spec_type_detail: 'Bi Lateral', percent_nominal: 0, specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 2, criteria: 'Machine', name: 'Are safety guards in place and functional?', spec_type: 'variable', spec_type_detail: 'Bi Lateral', percent_nominal: 0, specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                     { id: 3, criteria: 'Machine', name: 'Is routine maintenance performed on schedule?', spec_type: 'attribute', specification: 'Maintenance logs must be current', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                     { id: 4, criteria: 'Machine', name: 'Does the machine temperature meet specification?', spec_type: 'attribute', specification: 'Temperature between 80-90°C', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                 ],
@@ -1259,13 +1282,50 @@
             let currentAccordionCategory = null;
 
             function createCheckpointCardHTML(checkpoint) {
-                const specHTML = checkpoint.spec_type === 'variable'
-                    ? `<div class="spec-row">
-                        <div class="spec-item"><span class="spec-label">LSL</span><div class="spec-value">${checkpoint.specification.lsl}</div></div>
-                        <div class="spec-item"><span class="spec-label">Nominal</span><div class="spec-value">${checkpoint.specification.nominal}</div></div>
-                        <div class="spec-item"><span class="spec-label">USL</span><div class="spec-value">${checkpoint.specification.usl}</div></div>
-                       </div>`
-                    : `<div class="spec-row"><div class="spec-item"><div class="spec-value" style="font-size: 1rem;">${checkpoint.specification}</div></div></div>`;
+                let specHTML = '';
+                if (checkpoint.spec_type === 'variable') {
+                    const isPercent = checkpoint.spec_type_detail === '% Of Nominal';
+                    const isMin = checkpoint.spec_type_detail === 'Single Limit Min.';
+                    const isMax = checkpoint.spec_type_detail === 'Single Limit Max.';
+
+                    specHTML = `
+                        <div class="spec-row">
+                            <div class="spec-item type-select">
+                                <span class="spec-label">Type</span>
+                                <select class="spec-select spec-type-detail" data-id="${checkpoint.id}">
+                                    <option value="Bi Lateral" ${checkpoint.spec_type_detail === 'Bi Lateral' ? 'selected' : ''}>Bi Lateral</option>
+                                    <option value="% Of Nominal" ${checkpoint.spec_type_detail === '% Of Nominal' ? 'selected' : ''}>% Of Nominal</option>
+                                    <option value="Single Limit Min." ${checkpoint.spec_type_detail === 'Single Limit Min.' ? 'selected' : ''}>Single Limit Min.</option>
+                                    <option value="Single Limit Max." ${checkpoint.spec_type_detail === 'Single Limit Max.' ? 'selected' : ''}>Single Limit Max.</option>
+                                </select>
+                            </div>
+                            
+                            ${isPercent ? `
+                                <div class="spec-item">
+                                    <span class="spec-label">% Nominal</span>
+                                    <input type="number" class="spec-input spec-percent-nominal" data-id="${checkpoint.id}" value="${checkpoint.percent_nominal || 0}">
+                                </div>
+                            ` : ''}
+
+                            <div class="spec-item">
+                                <span class="spec-label">LSL</span>
+                                <input type="number" class="spec-input spec-lsl" data-id="${checkpoint.id}" value="${checkpoint.specification.lsl}" ${isPercent || isMin || isMax ? 'readonly' : ''}>
+                            </div>
+
+                            <div class="spec-item">
+                                <span class="spec-label">Nominal</span>
+                                <input type="number" class="spec-input spec-nominal" data-id="${checkpoint.id}" value="${checkpoint.specification.nominal}" ${isMax ? 'readonly' : ''}>
+                            </div>
+
+                            <div class="spec-item">
+                                <span class="spec-label">USL</span>
+                                <input type="text" class="spec-input spec-usl" data-id="${checkpoint.id}" value="${checkpoint.specification.usl}" ${isPercent || isMin ? 'readonly' : ''}>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    specHTML = `<div class="spec-row"><div class="spec-item"><div class="spec-value" style="font-size: 1rem;">${checkpoint.specification}</div></div></div>`;
+                }
 
                 const actualValueInput = `<div class="form-group actual-value-group">
                            <label>Actual Value</label>
@@ -1273,8 +1333,7 @@
                                   class="actual-value-input" 
                                   placeholder="Enter value" 
                                   value="${checkpoint.actual_value || ''}"
-                                  data-id="${checkpoint.id}"
-                                  ${checkpoint.spec_type === 'variable' ? `data-lsl="${checkpoint.specification.lsl}" data-usl="${checkpoint.specification.usl}"` : ''}>
+                                  data-id="${checkpoint.id}">
                        </div>`;
 
                 return `
@@ -1354,6 +1413,49 @@
                 `;
             }
 
+            function recalculateCheckpointSpec(checkpoint) {
+                if (checkpoint.spec_type !== 'variable') return;
+
+                const detail = checkpoint.spec_type_detail;
+                const nominal = parseFloat(checkpoint.specification.nominal) || 0;
+                const percent = parseFloat(checkpoint.percent_nominal) || 0;
+
+                if (detail === 'Bi Lateral') {
+                    // All editable
+                } else if (detail === '% Of Nominal') {
+                    checkpoint.specification.lsl = nominal - (nominal * percent / 100);
+                    checkpoint.specification.usl = nominal + (nominal * percent / 100);
+                } else if (detail === 'Single Limit Min.') {
+                    checkpoint.specification.lsl = nominal;
+                    checkpoint.specification.usl = Infinity;
+                } else if (detail === 'Single Limit Max.') {
+                    checkpoint.specification.lsl = 0;
+                    checkpoint.specification.nominal = 0;
+                }
+            }
+
+            function validateCheckpointValue(checkpoint) {
+                if (checkpoint.spec_type !== 'variable') return;
+                if (checkpoint.actual_value === '') {
+                    checkpoint.score = null;
+                    checkpoint.disposition = null;
+                    return;
+                }
+
+                const val = parseFloat(checkpoint.actual_value);
+                const lsl = parseFloat(checkpoint.specification.lsl);
+                const uslValue = checkpoint.specification.usl;
+                const usl = (uslValue === 'Infinity' || uslValue === Infinity) ? Infinity : parseFloat(uslValue);
+
+                if (!isNaN(val) && val >= lsl && val <= usl) {
+                    checkpoint.score = 4;
+                    checkpoint.disposition = 'Compliant';
+                } else {
+                    checkpoint.score = 0;
+                    checkpoint.disposition = 'NC';
+                }
+            }
+
             function renderCheckpoints(criteria) {
                 const data = checkpointsData[criteria] || [];
                 checkpointsGrid.innerHTML = data.map(createCheckpointCardHTML).join('');
@@ -1390,31 +1492,38 @@
             }
 
             checkpointsGrid.addEventListener('input', (e) => {
-                if (e.target.classList.contains('actual-value-input')) {
-                    const card = e.target.closest('.checkpoint-card');
-                    const id = parseInt(e.target.dataset.id);
-                    const criteria = document.getElementById('evaluation-category-title').textContent;
-                    const checkpoint = checkpointsData[criteria].find(c => c.id === id);
-                    
-                    checkpoint.actual_value = e.target.value;
+                const target = e.target;
+                const card = target.closest('.checkpoint-card');
+                if (!card) return;
 
-                    if (checkpoint.spec_type === 'variable') {
-                        const lsl = parseFloat(e.target.dataset.lsl);
-                        const usl = parseFloat(e.target.dataset.usl);
-                        const value = parseFloat(e.target.value);
+                const id = parseInt(target.dataset.id);
+                const criteria = document.getElementById('evaluation-category-title').textContent;
+                const checkpoint = checkpointsData[criteria].find(c => c.id === id);
+                if (!checkpoint) return;
 
-                        if (!isNaN(value)) {
-                            if (value >= lsl && value <= usl) {
-                                checkpoint.score = 4;
-                                checkpoint.disposition = 'Compliant';
-                            } else {
-                                checkpoint.score = 0;
-                                checkpoint.disposition = 'NC';
-                            }
-                        }
-                    }
+                if (target.classList.contains('actual-value-input')) {
+                    checkpoint.actual_value = target.value;
+                    validateCheckpointValue(checkpoint);
                     updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition });
-                    renderAccordions(); // Update progress
+                    renderAccordions();
+                } else if (target.classList.contains('spec-input')) {
+                    if (target.classList.contains('spec-lsl')) checkpoint.specification.lsl = target.value;
+                    if (target.classList.contains('spec-nominal')) checkpoint.specification.nominal = target.value;
+                    if (target.classList.contains('spec-usl')) checkpoint.specification.usl = target.value;
+                    if (target.classList.contains('spec-percent-nominal')) checkpoint.percent_nominal = target.value;
+
+                    recalculateCheckpointSpec(checkpoint);
+                    validateCheckpointValue(checkpoint);
+                    
+                    // Re-render the spec box to show calculated values
+                    const specBox = card.querySelector('.spec-box');
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = createCheckpointCardHTML(checkpoint);
+                    const newSpecBox = tempDiv.querySelector('.spec-box');
+                    specBox.innerHTML = newSpecBox.innerHTML;
+                    
+                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition });
+                    renderAccordions();
                 }
             });
 
@@ -1452,7 +1561,29 @@
             });
 
             checkpointsGrid.addEventListener('change', (e) => {
-                if (e.target.classList.contains('applicable-checkbox')) {
+                const target = e.target;
+                if (target.classList.contains('spec-type-detail')) {
+                    const card = target.closest('.checkpoint-card');
+                    const id = parseInt(target.dataset.id);
+                    const criteria = document.getElementById('evaluation-category-title').textContent;
+                    const checkpoint = checkpointsData[criteria].find(c => c.id === id);
+                    
+                    checkpoint.spec_type_detail = target.value;
+                    recalculateCheckpointSpec(checkpoint);
+                    validateCheckpointValue(checkpoint);
+                    
+                    // Full re-render of this card's spec section
+                    const specBox = card.querySelector('.spec-box');
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = createCheckpointCardHTML(checkpoint);
+                    const newSpecBox = tempDiv.querySelector('.spec-box');
+                    specBox.innerHTML = newSpecBox.innerHTML;
+
+                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition });
+                    renderAccordions();
+                }
+
+                if (target.classList.contains('applicable-checkbox')) {
                     currentCheckpointCard = e.target.closest('.checkpoint-card');
                     const id = parseInt(e.target.dataset.id);
                     const criteria = document.getElementById('evaluation-category-title').textContent;
