@@ -570,43 +570,6 @@
             position: relative;
         }
 
-        .spec-edit-row {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-end;
-            flex-wrap: wrap;
-        }
-        .spec-edit-group {
-            flex: 1;
-            min-width: 100px;
-        }
-        .spec-edit-group.hidden {
-            display: none;
-        }
-        .spec-edit-group label {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--accent-color-blue);
-            margin-bottom: 0.25rem;
-            text-transform: uppercase;
-        }
-        .spec-edit-input, .spec-edit-select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #bee3f8;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            font-family: var(--font-family-inter);
-            background: white;
-        }
-        .spec-edit-input:disabled {
-            background-color: #f1f5f9;
-            cursor: not-allowed;
-            color: var(--secondary-text);
-        }
-
         .spec-header {
             position: absolute;
             top: -10px;
@@ -1181,20 +1144,20 @@
 
             const checkpointsData = {
                 'Machine': [
-                    { id: 1, criteria: 'Machine', name: 'Is the machine calibrated?', spec_type: 'variable', spec_mode: 'Bi Lateral', percent_nominal: 0, specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
-                    { id: 2, criteria: 'Machine', name: 'Are safety guards in place and functional?', spec_type: 'variable', spec_mode: 'Bi Lateral', percent_nominal: 0, specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
-                    { id: 3, criteria: 'Machine', name: 'Is routine maintenance performed on schedule?', spec_type: 'attribute', spec_mode: 'Bi Lateral', percent_nominal: 0, specification: 'Maintenance logs must be current', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
-                    { id: 4, criteria: 'Machine', name: 'Does the machine temperature meet specification?', spec_type: 'attribute', spec_mode: 'Bi Lateral', percent_nominal: 0, specification: 'Temperature between 80-90°C', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 1, criteria: 'Machine', name: 'Is the machine calibrated?', spec_type: 'variable', specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 2, criteria: 'Machine', name: 'Are safety guards in place and functional?', spec_type: 'variable', specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 3, criteria: 'Machine', name: 'Is routine maintenance performed on schedule?', spec_type: 'attribute', specification: 'Maintenance logs must be current', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 4, criteria: 'Machine', name: 'Does the machine temperature meet specification?', spec_type: 'attribute', specification: 'Temperature between 80-90°C', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                 ],
                 'Man': [
-                    { id: 5, criteria: 'Man', name: 'Is the operator trained?', spec_type: 'attribute', spec_mode: 'Bi Lateral', percent_nominal: 0, specification: 'Training records must be valid', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
-                    { id: 6, criteria: 'Man', name: 'Does the operator follow SOP?', spec_type: 'attribute', spec_mode: 'Bi Lateral', percent_nominal: 0, specification: 'SOP adherence required', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 5, criteria: 'Man', name: 'Is the operator trained?', spec_type: 'attribute', specification: 'Training records must be valid', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 6, criteria: 'Man', name: 'Does the operator follow SOP?', spec_type: 'attribute', specification: 'SOP adherence required', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                 ],
                 'Material': [
-                    { id: 7, criteria: 'Material', name: 'Is the material grade correct?', spec_type: 'attribute', spec_mode: 'Bi Lateral', percent_nominal: 0, specification: 'Grade 304 Stainless Steel', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 7, criteria: 'Material', name: 'Is the material grade correct?', spec_type: 'attribute', specification: 'Grade 304 Stainless Steel', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                 ],
                 'Method': [
-                    { id: 8, criteria: 'Method', name: 'Is the process flow followed?', spec_type: 'attribute', spec_mode: 'Bi Lateral', percent_nominal: 0, specification: 'Flow chart adherence', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 8, criteria: 'Method', name: 'Is the process flow followed?', spec_type: 'attribute', specification: 'Flow chart adherence', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                 ]
             };
 
@@ -1294,91 +1257,15 @@
             }
 
             let currentAccordionCategory = null;
-            let currentCheckpointCard = null;
-
-            function recalculateCheckpoint(checkpoint) {
-                if (checkpoint.spec_type !== 'variable') return;
-                
-                const mode = checkpoint.spec_mode;
-                const nominal = parseFloat(checkpoint.specification.nominal) || 0;
-                const percent = parseFloat(checkpoint.percent_nominal) || 0;
-                
-                if (mode === '% Of Nominal') {
-                    checkpoint.specification.lsl = nominal - (nominal * percent / 100);
-                    checkpoint.specification.usl = nominal + (nominal * percent / 100);
-                } else if (mode === 'Single Limit Min.') {
-                    checkpoint.specification.lsl = nominal;
-                    checkpoint.specification.usl = Infinity;
-                } else if (mode === 'Single Limit Max.') {
-                    checkpoint.specification.lsl = 0;
-                    checkpoint.specification.nominal = 0;
-                }
-                
-                // Re-evaluate score if actual_value exists
-                const actual = parseFloat(checkpoint.actual_value);
-                if (!isNaN(actual)) {
-                    const finalLsl = checkpoint.specification.lsl;
-                    const finalUsl = checkpoint.specification.usl;
-                    
-                    if (actual >= finalLsl && actual <= finalUsl) {
-                        checkpoint.score = 4;
-                        checkpoint.disposition = 'Compliant';
-                    } else {
-                        checkpoint.score = 0;
-                        checkpoint.disposition = 'NC';
-                    }
-                }
-            }
 
             function createCheckpointCardHTML(checkpoint) {
-                const isVariable = checkpoint.spec_type === 'variable';
-                
-                let specSectionHTML = '';
-                
-                if (isVariable) {
-                    const isPercent = checkpoint.spec_mode === '% Of Nominal';
-                    const isSingleMin = checkpoint.spec_mode === 'Single Limit Min.';
-                    const isSingleMax = checkpoint.spec_mode === 'Single Limit Max.';
-                    
-                    specSectionHTML = `
-                    <div class="spec-edit-row">
-                        <div class="spec-edit-group">
-                            <label>Type</label>
-                            <select class="spec-edit-select spec-type-select" data-id="${checkpoint.id}">
-                                <option value="Bi Lateral" ${checkpoint.spec_mode === 'Bi Lateral' ? 'selected' : ''}>Bi Lateral</option>
-                                <option value="% Of Nominal" ${checkpoint.spec_mode === '% Of Nominal' ? 'selected' : ''}>% Of Nominal</option>
-                                <option value="Single Limit Min." ${checkpoint.spec_mode === 'Single Limit Min.' ? 'selected' : ''}>Single Limit Min.</option>
-                                <option value="Single Limit Max." ${checkpoint.spec_mode === 'Single Limit Max.' ? 'selected' : ''}>Single Limit Max.</option>
-                            </select>
-                        </div>
-                        <div class="spec-edit-group ${isPercent ? '' : 'hidden'}">
-                            <label>% Nominal</label>
-                            <input type="number" class="spec-edit-input spec-percent-input" value="${checkpoint.percent_nominal}" data-id="${checkpoint.id}">
-                        </div>
-                        <div class="spec-edit-group">
-                            <label>LSL</label>
-                            <input type="number" class="spec-edit-input spec-lsl-input" value="${checkpoint.specification.lsl}" data-id="${checkpoint.id}" ${isPercent || isSingleMin || isSingleMax ? 'disabled' : ''}>
-                        </div>
-                        <div class="spec-edit-group">
-                            <label>Nominal</label>
-                            <input type="number" class="spec-edit-input spec-nominal-input" value="${checkpoint.specification.nominal}" data-id="${checkpoint.id}" ${isSingleMax ? 'disabled' : ''}>
-                        </div>
-                        <div class="spec-edit-group">
-                            <label>USL</label>
-                            <input type="number" class="spec-edit-input spec-usl-input" value="${checkpoint.specification.usl}" data-id="${checkpoint.id}" ${isPercent || isSingleMin ? 'disabled' : ''}>
-                        </div>
-                    </div>
-                    `;
-                } else {
-                    specSectionHTML = `
-                    <div class="spec-edit-row">
-                        <div class="spec-edit-group" style="flex: 1;">
-                            <label>Specification</label>
-                            <input type="text" class="spec-edit-input spec-attribute-input" value="${checkpoint.specification}" data-id="${checkpoint.id}">
-                        </div>
-                    </div>
-                    `;
-                }
+                const specHTML = checkpoint.spec_type === 'variable'
+                    ? `<div class="spec-row">
+                        <div class="spec-item"><span class="spec-label">LSL</span><div class="spec-value">${checkpoint.specification.lsl}</div></div>
+                        <div class="spec-item"><span class="spec-label">Nominal</span><div class="spec-value">${checkpoint.specification.nominal}</div></div>
+                        <div class="spec-item"><span class="spec-label">USL</span><div class="spec-value">${checkpoint.specification.usl}</div></div>
+                       </div>`
+                    : `<div class="spec-row"><div class="spec-item"><div class="spec-value" style="font-size: 1rem;">${checkpoint.specification}</div></div></div>`;
 
                 const actualValueInput = `<div class="form-group actual-value-group">
                            <label>Actual Value</label>
@@ -1386,7 +1273,8 @@
                                   class="actual-value-input" 
                                   placeholder="Enter value" 
                                   value="${checkpoint.actual_value || ''}"
-                                  data-id="${checkpoint.id}">
+                                  data-id="${checkpoint.id}"
+                                  ${checkpoint.spec_type === 'variable' ? `data-lsl="${checkpoint.specification.lsl}" data-usl="${checkpoint.specification.usl}"` : ''}>
                        </div>`;
 
                 return `
@@ -1400,7 +1288,7 @@
                     <p class="checkpoint-question">${checkpoint.name}</p>
                     <div class="spec-box">
                         <div class="spec-header">Specification</div>
-                        ${specSectionHTML}
+                        ${specHTML}
                     </div>
                     
                     <div class="checkpoint-body ${checkpoint.applicable ? '' : 'hidden'}">
@@ -1501,35 +1389,19 @@
                 });
             }
 
-            function updateSpecInputs(card, checkpoint) {
-                if (checkpoint.spec_type !== 'variable') return;
-                
-                const lslInput = card.querySelector('.spec-lsl-input');
-                const uslInput = card.querySelector('.spec-usl-input');
-                const nominalInput = card.querySelector('.spec-nominal-input');
-                
-                if (lslInput) lslInput.value = checkpoint.specification.lsl;
-                if (uslInput) uslInput.value = checkpoint.specification.usl;
-                if (nominalInput) nominalInput.value = checkpoint.specification.nominal;
-            }
-
             checkpointsGrid.addEventListener('input', (e) => {
-                const target = e.target;
-                const card = target.closest('.checkpoint-card');
-                if (!card) return;
-                
-                const id = parseInt(target.dataset.id);
-                const criteria = document.getElementById('evaluation-category-title').textContent;
-                const checkpoint = checkpointsData[criteria]?.find(c => c.id === id);
-                if (!checkpoint) return;
-
-                if (target.classList.contains('actual-value-input')) {
-                    checkpoint.actual_value = target.value;
+                if (e.target.classList.contains('actual-value-input')) {
+                    const card = e.target.closest('.checkpoint-card');
+                    const id = parseInt(e.target.dataset.id);
+                    const criteria = document.getElementById('evaluation-category-title').textContent;
+                    const checkpoint = checkpointsData[criteria].find(c => c.id === id);
+                    
+                    checkpoint.actual_value = e.target.value;
 
                     if (checkpoint.spec_type === 'variable') {
-                        const lsl = parseFloat(checkpoint.specification.lsl);
-                        const usl = parseFloat(checkpoint.specification.usl);
-                        const value = parseFloat(target.value);
+                        const lsl = parseFloat(e.target.dataset.lsl);
+                        const usl = parseFloat(e.target.dataset.usl);
+                        const value = parseFloat(e.target.value);
 
                         if (!isNaN(value)) {
                             if (value >= lsl && value <= usl) {
@@ -1543,30 +1415,6 @@
                     }
                     updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition });
                     renderAccordions(); // Update progress
-                } else if (target.classList.contains('spec-percent-input')) {
-                    checkpoint.percent_nominal = target.value;
-                    recalculateCheckpoint(checkpoint);
-                    updateSpecInputs(card, checkpoint);
-                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition });
-                    renderAccordions();
-                } else if (target.classList.contains('spec-lsl-input')) {
-                    checkpoint.specification.lsl = target.value;
-                    recalculateCheckpoint(checkpoint);
-                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition });
-                    renderAccordions();
-                } else if (target.classList.contains('spec-nominal-input')) {
-                    checkpoint.specification.nominal = target.value;
-                    recalculateCheckpoint(checkpoint);
-                    updateSpecInputs(card, checkpoint);
-                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition });
-                    renderAccordions();
-                } else if (target.classList.contains('spec-usl-input')) {
-                    checkpoint.specification.usl = target.value;
-                    recalculateCheckpoint(checkpoint);
-                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition });
-                    renderAccordions();
-                } else if (target.classList.contains('spec-attribute-input')) {
-                    checkpoint.specification = target.value;
                 }
             });
 
@@ -1604,18 +1452,13 @@
             });
 
             checkpointsGrid.addEventListener('change', (e) => {
-                const target = e.target;
-                const card = target.closest('.checkpoint-card');
-                if (!card) return;
-                
-                const id = parseInt(target.dataset.id);
-                const criteria = document.getElementById('evaluation-category-title').textContent;
-                const checkpoint = checkpointsData[criteria]?.find(c => c.id === id);
+                if (e.target.classList.contains('applicable-checkbox')) {
+                    currentCheckpointCard = e.target.closest('.checkpoint-card');
+                    const id = parseInt(e.target.dataset.id);
+                    const criteria = document.getElementById('evaluation-category-title').textContent;
+                    const checkpoint = checkpointsData[criteria].find(c => c.id === id);
 
-                if (target.classList.contains('applicable-checkbox')) {
-                    currentCheckpointCard = target.closest('.checkpoint-card');
-                    
-                    if (!target.checked) {
+                    if (!e.target.checked) {
                         currentAccordionCategory = null;
                         reasonModal.classList.remove('hidden');
                     } else {
@@ -1628,11 +1471,6 @@
                         if (reasonDisplay) reasonDisplay.classList.add('hidden');
                         renderAccordions();
                     }
-                } else if (target.classList.contains('spec-type-select')) {
-                    checkpoint.spec_mode = target.value;
-                    recalculateCheckpoint(checkpoint);
-                    renderCheckpoints(criteria);
-                    renderAccordions();
                 }
             });
 
