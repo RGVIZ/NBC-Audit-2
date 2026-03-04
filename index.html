@@ -587,6 +587,14 @@
             gap: 0.5rem;
         }
 
+        .action-type-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+            background-color: #f7fafc !important;
+            color: #a0aec0 !important;
+            border-color: #e2e8f0 !important;
+        }
+
         .info-btn {
             width: 14px;
             height: 14px;
@@ -1339,7 +1347,7 @@
 
                             <div class="spec-item">
                                 <span class="spec-label">Nominal</span>
-                                <input type="number" class="spec-input spec-nominal" data-id="${checkpoint.id}" value="${checkpoint.specification.nominal}" ${isMin || isMax ? 'readonly' : ''}>
+                                <input type="number" class="spec-input spec-nominal" data-id="${checkpoint.id}" value="${checkpoint.specification.nominal}" ${isMin ? 'readonly' : ''}>
                             </div>
 
                             <div class="spec-item">
@@ -1379,7 +1387,7 @@
                     <div class="spec-box">
                         <div class="spec-header">
                             Specification
-                            <button class="info-btn" data-id="${checkpoint.id}" title="Type Explanation">i</button>
+                            ${checkpoint.spec_type === 'variable' ? `<button class="info-btn" data-id="${checkpoint.id}" title="Type Explanation">i</button>` : ''}
                         </div>
                         ${specHTML}
                     </div>
@@ -1473,9 +1481,9 @@
                     checkpoint.specification.nominal = 0;
                     // USL remains editable
                 } else if (detail === 'Single Limit Max.') {
-                    // Opposite of Min: USL Infinity, LSL editable
-                    checkpoint.specification.nominal = 0;
+                    // User Request: USL Infinity, Nominal editable, LSL = Nominal
                     checkpoint.specification.usl = Infinity;
+                    checkpoint.specification.lsl = nominal;
                 }
             }
 
@@ -1524,10 +1532,19 @@
 
                 if (updates.disposition !== undefined) {
                     dispositionBtns.forEach(el => el.classList.remove('active', 'nc', 'ofi', 'compliant'));
-                     const activeDisp = card.querySelector(`.disposition-btn[data-value="${updates.disposition}"]`);
-                     if(activeDisp) {
-                         activeDisp.classList.add('active', updates.disposition.toLowerCase());
-                     }
+                    const activeDisp = card.querySelector(`.disposition-btn[data-value="${updates.disposition}"]`);
+                    if(activeDisp) {
+                        activeDisp.classList.add('active', updates.disposition.toLowerCase());
+                    }
+
+                    // Disable Action Type buttons if Disposition is Compliant
+                    const isCompliant = updates.disposition === 'Compliant';
+                    actionTypeBtns.forEach(btn => {
+                        btn.disabled = isCompliant;
+                        if (isCompliant) {
+                            btn.classList.remove('active', 'capa', 'prs');
+                        }
+                    });
                 }
 
                 if (updates.action_type !== undefined) {
@@ -1553,7 +1570,7 @@
                 if (target.classList.contains('actual-value-input')) {
                     checkpoint.actual_value = target.value;
                     validateCheckpointValue(checkpoint);
-                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition, action_type: null });
+                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition, action_type: checkpoint.action_type });
                     renderAccordions();
                 } else if (target.classList.contains('spec-input')) {
                     if (target.classList.contains('spec-lsl')) checkpoint.specification.lsl = target.value;
@@ -1565,14 +1582,16 @@
                     recalculateCheckpointSpec(checkpoint);
                     validateCheckpointValue(checkpoint);
                     
-                    // Re-render the spec box to show calculated values
-                    const specBox = card.querySelector('.spec-box');
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = createCheckpointCardHTML(checkpoint);
-                    const newSpecBox = tempDiv.querySelector('.spec-box');
-                    specBox.innerHTML = newSpecBox.innerHTML;
+                    // Update related fields in the DOM instead of full re-render to avoid losing focus
+                    const lslInput = card.querySelector('.spec-lsl');
+                    const nominalInput = card.querySelector('.spec-nominal');
+                    const uslInput = card.querySelector('.spec-usl');
                     
-                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition, action_type: null });
+                    if (lslInput && lslInput !== target) lslInput.value = checkpoint.specification.lsl;
+                    if (nominalInput && nominalInput !== target) nominalInput.value = checkpoint.specification.nominal;
+                    if (uslInput && uslInput !== target) uslInput.value = checkpoint.specification.usl;
+                    
+                    updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition, action_type: checkpoint.action_type });
                     renderAccordions();
                 }
             });
