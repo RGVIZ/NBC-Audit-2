@@ -1379,20 +1379,20 @@
 
             const checkpointsData = {
                 'Machine': [
-                    { id: 1, criteria: 'Machine', name: 'Is the machine calibrated?', spec_type: 'variable', spec_type_detail: 'Bi Lateral', percent_nominal: 0, specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
-                    { id: 2, criteria: 'Machine', name: 'Are safety guards in place and functional?', spec_type: 'variable', spec_type_detail: 'Bi Lateral', percent_nominal: 0, specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
-                    { id: 3, criteria: 'Machine', name: 'Is routine maintenance performed on schedule?', spec_type: 'attribute', specification: 'Maintenance logs must be current', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
-                    { id: 4, criteria: 'Machine', name: 'Does the machine temperature meet specification?', spec_type: 'attribute', specification: 'Temperature between 80-90°C', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 1, criteria: 'Machine', criteria_group: 'Calibration', name: 'Is the machine calibrated?', spec_type: 'variable', spec_type_detail: 'Bi Lateral', percent_nominal: 0, specification: { nominal: 100, usl: 105, lsl: 95 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 2, criteria: 'Machine', criteria_group: 'Safety', name: 'Are safety guards in place and functional?', spec_type: 'variable', spec_type_detail: 'Bi Lateral', percent_nominal: 0, specification: { nominal: 50, usl: 55, lsl: 45 }, applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 3, criteria: 'Machine', criteria_group: 'Maintenance', name: 'Is routine maintenance performed on schedule?', spec_type: 'attribute', specification: 'Maintenance logs must be current', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 4, criteria: 'Machine', criteria_group: 'Environment', name: 'Does the machine temperature meet specification?', spec_type: 'attribute', specification: 'Temperature between 80-90°C', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                 ],
                 'Man': [
-                    { id: 5, criteria: 'Man', name: 'Is the operator trained?', spec_type: 'attribute', specification: 'Training records must be valid', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
-                    { id: 6, criteria: 'Man', name: 'Does the operator follow SOP?', spec_type: 'attribute', specification: 'SOP adherence required', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 5, criteria: 'Man', criteria_group: 'Operator Skill', name: 'Is the operator trained?', spec_type: 'attribute', specification: 'Training records must be valid', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 6, criteria: 'Man', criteria_group: 'Operator Awareness', name: 'Does the operator follow SOP?', spec_type: 'attribute', specification: 'SOP adherence required', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                 ],
                 'Material': [
-                    { id: 7, criteria: 'Material', name: 'Is the material grade correct?', spec_type: 'attribute', specification: 'Grade 304 Stainless Steel', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 7, criteria: 'Material', criteria_group: 'Raw Material', name: 'Is the material grade correct?', spec_type: 'attribute', specification: 'Grade 304 Stainless Steel', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                 ],
                 'Method': [
-                    { id: 8, criteria: 'Method', name: 'Is the process flow followed?', spec_type: 'attribute', specification: 'Flow chart adherence', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 8, criteria: 'Method', criteria_group: 'Process Flow', name: 'Is the process flow followed?', spec_type: 'attribute', specification: 'Flow chart adherence', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
                 ]
             };
 
@@ -1406,37 +1406,40 @@
             function renderAccordions() {
                 const container = document.getElementById('evaluation-accordions');
                 
-                // User Request: Layered View: Request > Group Accordion > Criteria Accordions
-                // For now, we'll group Man, Machine, Material, Method under "5M Group"
-                const groups = {
-                    "Process Audit Group": ["Man", "Machine", "Material", "Method"]
-                };
+                // User Request: Man, Machine, Material are the Group Accordions.
+                const categories = ["Man", "Machine", "Material", "Method"];
 
-                container.innerHTML = Object.keys(groups).map(groupName => {
-                    const categories = groups[groupName];
-                    const groupContent = categories.map(cat => {
-                        const progress = calculateProgress(cat);
-                        const isAllNA = checkpointsData[cat].every(c => !c.applicable);
-                        const naReason = isAllNA ? (checkpointsData[cat][0]?.reason || 'Not applicable') : '';
-                        
-                        // Count Attribute vs Variable
-                        const attrCount = checkpointsData[cat].filter(c => c.spec_type === 'attribute').length;
-                        const varCount = checkpointsData[cat].filter(c => c.spec_type === 'variable').length;
+                container.innerHTML = categories.map(cat => {
+                    const progress = calculateProgress(cat);
+                    const isAllNA = checkpointsData[cat].every(c => !c.applicable);
+                    const naReason = isAllNA ? (checkpointsData[cat][0]?.reason || 'Not applicable') : '';
+                    
+                    // Count Attribute vs Variable
+                    const attrCount = checkpointsData[cat].filter(c => c.spec_type === 'attribute').length;
+                    const varCount = checkpointsData[cat].filter(c => c.spec_type === 'variable').length;
 
-                        return `
-                        <div class="question-item ${isAllNA ? 'is-na' : ''}" data-category="${cat}">
-                            <div class="accordion-content-wrapper">
+                    return `
+                    <div class="group-accordion">
+                        <div class="group-header question-item ${isAllNA ? 'is-na' : ''}" data-category="${cat}">
+                            <div class="accordion-content-wrapper" style="width: 100%;">
                                 <div style="flex: 1;">
-                                    <h3>${cat}</h3>
+                                    <h3 style="margin: 0;">${cat}</h3>
                                     ${!isAllNA ? `<div class="progress-bar" style="width: ${progress}%"></div>` : ''}
                                     ${isAllNA ? `<p style="font-size: 0.8rem; margin-top: 0.25rem;">Reason: ${naReason}</p>` : ''}
                                 </div>
                                 <div class="accordion-actions">
-                                    <div style="display: flex; flex-direction: column; align-items: flex-end; margin-right: 1rem;">
-                                        <span style="font-size: 0.7rem; color: var(--secondary-text);">Attr: ${attrCount} | Var: ${varCount}</span>
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-right: 1.5rem;">
+                                        <div style="display: flex; flex-direction: column; align-items: center; background: #f0f4f8; padding: 4px 12px; border-radius: 6px; border: 1px solid #d1d9e6;">
+                                            <span style="font-size: 0.65rem; color: var(--secondary-text); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Attribute</span>
+                                            <span style="font-size: 1.1rem; font-weight: 800; color: var(--primary-color);">${attrCount}</span>
+                                        </div>
+                                        <div style="display: flex; flex-direction: column; align-items: center; background: #f0f4f8; padding: 4px 12px; border-radius: 6px; border: 1px solid #d1d9e6;">
+                                            <span style="font-size: 0.65rem; color: var(--secondary-text); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Variable</span>
+                                            <span style="font-size: 1.1rem; font-weight: 800; color: var(--primary-color);">${varCount}</span>
+                                        </div>
                                     </div>
                                     <div style="display: flex; align-items: center; gap: 0.5rem; margin-right: 1rem;">
-                                        <span style="font-size: 0.8rem; font-weight: 600;">Applicable</span>
+                                        <span class="toggle-label" style="font-size: 0.85rem; font-weight: 700; min-width: 100px; text-align: right;">${isAllNA ? 'Not Applicable' : 'Applicable'}</span>
                                         <label class="toggle-switch">
                                             <input type="checkbox" class="na-toggle" data-category="${cat}" ${!isAllNA ? 'checked' : ''}>
                                             <span class="slider"></span>
@@ -1447,22 +1450,11 @@
                                 </div>
                             </div>
                         </div>
-                        `;
-                    }).join('');
-
-                    return `
-                    <div class="group-accordion">
-                        <div class="group-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
-                            ${groupName}
-                        </div>
-                        <div class="group-content">
-                            ${groupContent}
-                        </div>
                     </div>
                     `;
                 }).join('');
 
-                container.querySelectorAll('.question-item').forEach(item => {
+                container.querySelectorAll('.group-header').forEach(item => {
                     item.addEventListener('click', (e) => {
                         if (e.target.closest('.accordion-btn') || e.target.closest('.toggle-switch')) return;
                         if (item.classList.contains('is-na')) return;
@@ -1477,11 +1469,14 @@
                 container.querySelectorAll('.na-toggle').forEach(toggle => {
                     toggle.addEventListener('change', (e) => {
                         const cat = toggle.dataset.category;
+                        const label = toggle.closest('.accordion-actions').querySelector('.toggle-label');
                         if (!e.target.checked) {
+                            label.textContent = 'Not Applicable';
                             currentAccordionCategory = cat;
                             currentCheckpointCard = null;
                             reasonModal.classList.remove('hidden');
                         } else {
+                            label.textContent = 'Applicable';
                             checkpointsData[cat].forEach(c => {
                                 c.applicable = true;
                                 c.reason = '';
@@ -1722,21 +1717,40 @@
             function renderCheckpoints(criteria) {
                 const data = checkpointsData[criteria] || [];
                 
-                // User Request: Add header inside Accordion with Back, Save, Expand/Summarize
+                // Group checkpoints by criteria_group
+                const grouped = data.reduce((acc, c) => {
+                    if (!acc[c.criteria_group]) acc[c.criteria_group] = [];
+                    acc[c.criteria_group].push(c);
+                    return acc;
+                }, {});
+
+                // User Request: Add header inside Accordion with Save, Expand/Summarize (Remove Back)
                 const headerHTML = `
                 <div class="evaluation-controls">
-                    <button class="btn-back" style="margin-bottom: 0;" onclick="showScreen('audit-request-details-screen')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                        Back
-                    </button>
-                    <div class="control-group">
+                    <div class="control-group" style="margin-left: auto;">
                         <button class="btn btn-primary" onclick="alert('Data Saved Successfully!')">Save</button>
                         <button class="btn" id="expand-toggle-btn" onclick="toggleExpandAll('${criteria}')">Summarize All</button>
                     </div>
                 </div>
                 `;
 
-                checkpointsGrid.innerHTML = headerHTML + data.map(createCheckpointCardHTML).join('');
+                let contentHTML = '';
+                Object.keys(grouped).forEach(groupName => {
+                    const groupCheckpoints = grouped[groupName];
+                    contentHTML += `
+                    <div class="criteria-group-section" style="margin-bottom: 2rem;">
+                        <div class="criteria-group-header" style="background: #eef2f7; padding: 12px 20px; border-radius: 8px; border-left: 5px solid var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
+                            <h4 style="margin: 0; font-size: 1.1rem; color: #334155; font-weight: 700;">${groupName}</h4>
+                            <span style="font-size: 0.8rem; background: var(--primary-color); color: white; padding: 2px 10px; border-radius: 20px;">${groupCheckpoints.length} Checkpoints</span>
+                        </div>
+                        <div class="criteria-group-content">
+                            ${groupCheckpoints.map(createCheckpointCardHTML).join('')}
+                        </div>
+                    </div>
+                    `;
+                });
+
+                checkpointsGrid.innerHTML = headerHTML + contentHTML;
             }
 
             let isExpanded = true;
