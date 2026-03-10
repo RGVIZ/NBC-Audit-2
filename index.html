@@ -519,11 +519,16 @@
 
         .checkpoint-card {
             background: #ffffff;
-            border: 1px solid var(--border-color);
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             font-family: var(--font-family-inter);
+            margin-bottom: 1.5rem;
+            transition: border-color 0.2s ease;
+        }
+        .checkpoint-card:hover {
+            border-color: var(--primary-color);
         }
 
         .checkpoint-card input, 
@@ -787,12 +792,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
+            background: #ffffff;
             padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow-sm);
+            border-radius: 0 0 12px 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             border: 1px solid var(--border-color);
+            position: sticky;
+            top: -1px;
+            z-index: 100;
         }
         .control-group {
             display: flex;
@@ -859,6 +867,18 @@
         }
         .criteria-group-content.collapsed {
             display: none;
+        }
+        .criteria-group-header {
+            background: #ffffff !important;
+            border: 1px solid var(--primary-color) !important;
+            border-left: 6px solid var(--primary-color) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease !important;
+            margin-bottom: 1rem;
+        }
+        .criteria-group-header:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: #f8fafc !important;
         }
         
         .score-group {
