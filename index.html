@@ -707,14 +707,152 @@
             color: var(--secondary-text);
         }
 
+        .sync-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background-color: var(--accent-color-purple);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-left: 1rem;
+        }
+        .sync-btn:hover {
+            background-color: #553c9a;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--accent-color-green);
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        .type-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 0.5rem;
+        }
+        .type-badge.variable {
+            background-color: #e0eaff;
+            color: var(--accent-color-blue);
+        }
+        .type-badge.attribute {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .evaluation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+        .control-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .modal-content.wide {
+            max-width: 900px;
+            width: 95%;
+        }
+        .sync-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        .sync-table th, .sync-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sync-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+
         .form-group textarea {
             width: 100%;
-            min-height: 60px;
+            min-height: 120px; /* Increased size */
             padding: 0.75rem;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             font-family: var(--font-family);
             font-size: 0.9rem;
+        }
+
+        .group-accordion {
+            margin-bottom: 2rem;
+        }
+        .group-header {
+            background: #e2e8f0;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .group-header:after {
+            content: '▼';
+            font-size: 0.8rem;
+        }
+        .group-header.collapsed:after {
+            content: '▶';
+        }
+        .group-content.collapsed {
+            display: none;
         }
         
         .score-group {
@@ -881,6 +1019,12 @@
                         <p>View and manage all audit requests.</p>
                     </div>
                 </div>
+                <div style="margin-top: 3rem;">
+                    <button class="sync-btn" onclick="showSyncModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+                        Sync to Web
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -893,6 +1037,10 @@
             </button>
             <div class="list-header">
                 <h1>Audit Requests</h1>
+                <button class="sync-btn" onclick="showSyncModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+                    Sync
+                </button>
             </div>
             <div class="tabs" id="tabs-ar">
                 <div class="tab active" data-tab="upcoming">Upcoming</div>
@@ -963,6 +1111,26 @@
             </div>
             <div class="checkpoints-grid" id="checkpoints-grid">
                 <!-- Checkpoints will be dynamically rendered here -->
+            </div>
+        </div>
+
+        <!-- Sync Modal -->
+        <div id="sync-modal" class="modal-overlay hidden">
+            <div class="modal-content wide">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2>Sync Data to Web</h2>
+                    <button class="close-modal" onclick="closeSyncModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>The following changes will be synchronized with the web version of the application:</p>
+                    <div id="sync-table-container">
+                        <!-- Table will be injected here -->
+                    </div>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="btn" onclick="closeSyncModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="performSync()">Confirm & Sync</button>
+                </div>
             </div>
         </div>
 
@@ -1052,6 +1220,17 @@
                 const activeScreen = document.getElementById(screenId);
                 if (activeScreen) {
                     activeScreen.classList.remove('hidden');
+                    
+                    // User Request: Only When the User Opens the Man, Machine etc accordion, the Breadcrumb is not required.
+                    const breadcrumbDetails = document.getElementById('breadcrumb-details');
+                    const breadcrumbEvaluation = document.getElementById('breadcrumb-evaluation');
+                    
+                    if (screenId === 'audit-evaluation-screen') {
+                        if (breadcrumbEvaluation) breadcrumbEvaluation.classList.add('hidden');
+                    } else {
+                        if (breadcrumbEvaluation) breadcrumbEvaluation.classList.remove('hidden');
+                    }
+                    
                     updateBreadcrumbs(screenId, breadcrumbPath);
                 }
             }
@@ -1226,58 +1405,89 @@
 
             function renderAccordions() {
                 const container = document.getElementById('evaluation-accordions');
-                const categories = Object.keys(checkpointsData);
                 
-                container.innerHTML = categories.map(cat => {
-                    const progress = calculateProgress(cat);
-                    const isAllNA = checkpointsData[cat].every(c => !c.applicable);
-                    const naReason = isAllNA ? (checkpointsData[cat][0]?.reason || 'Not applicable') : '';
-                    
-                    return `
-                    <div class="question-item ${isAllNA ? 'is-na' : ''}" data-category="${cat}">
-                        <div class="accordion-content-wrapper">
-                            <div style="flex: 1;">
-                                <h3>${cat}</h3>
-                                ${!isAllNA ? `<div class="progress-bar" style="width: ${progress}%"></div>` : ''}
-                                ${isAllNA ? `<p style="font-size: 0.8rem; margin-top: 0.25rem;">Reason: ${naReason}</p>` : ''}
-                            </div>
-                            <div class="accordion-actions">
-                                <button class="accordion-btn max" data-action="max" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Max</button>
-                                <button class="accordion-btn min" data-action="min" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Min</button>
-                                <button class="accordion-btn na" data-action="na" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>NA</button>
-                                <div class="count">${checkpointsData[cat].length}</div>
+                // User Request: Layered View: Request > Group Accordion > Criteria Accordions
+                // For now, we'll group Man, Machine, Material, Method under "5M Group"
+                const groups = {
+                    "Process Audit Group": ["Man", "Machine", "Material", "Method"]
+                };
+
+                container.innerHTML = Object.keys(groups).map(groupName => {
+                    const categories = groups[groupName];
+                    const groupContent = categories.map(cat => {
+                        const progress = calculateProgress(cat);
+                        const isAllNA = checkpointsData[cat].every(c => !c.applicable);
+                        const naReason = isAllNA ? (checkpointsData[cat][0]?.reason || 'Not applicable') : '';
+                        
+                        // Count Attribute vs Variable
+                        const attrCount = checkpointsData[cat].filter(c => c.spec_type === 'attribute').length;
+                        const varCount = checkpointsData[cat].filter(c => c.spec_type === 'variable').length;
+
+                        return `
+                        <div class="question-item ${isAllNA ? 'is-na' : ''}" data-category="${cat}">
+                            <div class="accordion-content-wrapper">
+                                <div style="flex: 1;">
+                                    <h3>${cat}</h3>
+                                    ${!isAllNA ? `<div class="progress-bar" style="width: ${progress}%"></div>` : ''}
+                                    ${isAllNA ? `<p style="font-size: 0.8rem; margin-top: 0.25rem;">Reason: ${naReason}</p>` : ''}
+                                </div>
+                                <div class="accordion-actions">
+                                    <div style="display: flex; flex-direction: column; align-items: flex-end; margin-right: 1rem;">
+                                        <span style="font-size: 0.7rem; color: var(--secondary-text);">Attr: ${attrCount} | Var: ${varCount}</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-right: 1rem;">
+                                        <span style="font-size: 0.8rem; font-weight: 600;">Applicable</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" class="na-toggle" data-category="${cat}" ${!isAllNA ? 'checked' : ''}>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <button class="accordion-btn max" data-action="max" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Max</button>
+                                    <button class="accordion-btn min" data-action="min" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Min</button>
+                                </div>
                             </div>
                         </div>
-                        ${isAllNA ? `<button class="mark-applicable-btn" data-category="${cat}">Mark As Applicable</button>` : ''}
+                        `;
+                    }).join('');
+
+                    return `
+                    <div class="group-accordion">
+                        <div class="group-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
+                            ${groupName}
+                        </div>
+                        <div class="group-content">
+                            ${groupContent}
+                        </div>
                     </div>
                     `;
                 }).join('');
 
                 container.querySelectorAll('.question-item').forEach(item => {
                     item.addEventListener('click', (e) => {
-                        if (e.target.closest('.accordion-btn') || e.target.closest('.mark-applicable-btn')) return;
-                        if (item.classList.contains('is-na')) return; // Disable click for NA
+                        if (e.target.closest('.accordion-btn') || e.target.closest('.toggle-switch')) return;
+                        if (item.classList.contains('is-na')) return;
 
                         const cat = item.dataset.category;
                         document.getElementById('evaluation-category-title').textContent = cat;
                         renderCheckpoints(cat);
-                        showScreen('audit-evaluation-screen', [
-                            {label: 'Audit Request', screen: 'audit-requests-screen'}, 
-                            {label: 'View', screen: 'audit-request-details-screen'}, 
-                            {label: cat}
-                        ]);
+                        showScreen('audit-evaluation-screen');
                     });
                 });
 
-                container.querySelectorAll('.mark-applicable-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const cat = btn.dataset.category;
-                        checkpointsData[cat].forEach(c => {
-                            c.applicable = true;
-                            c.reason = '';
-                        });
-                        renderAccordions();
+                container.querySelectorAll('.na-toggle').forEach(toggle => {
+                    toggle.addEventListener('change', (e) => {
+                        const cat = toggle.dataset.category;
+                        if (!e.target.checked) {
+                            currentAccordionCategory = cat;
+                            currentCheckpointCard = null;
+                            reasonModal.classList.remove('hidden');
+                        } else {
+                            checkpointsData[cat].forEach(c => {
+                                c.applicable = true;
+                                c.reason = '';
+                            });
+                            renderAccordions();
+                        }
                     });
                 });
 
@@ -1302,11 +1512,6 @@
                                 c.applicable = true;
                             });
                             renderAccordions();
-                        } else if (action === 'na') {
-                            // Show modal for bulk NA
-                            currentAccordionCategory = cat;
-                            currentCheckpointCard = null; // Signal bulk action
-                            reasonModal.classList.remove('hidden');
                         }
                     });
                 });
@@ -1316,6 +1521,8 @@
 
             function createCheckpointCardHTML(checkpoint) {
                 let specHTML = '';
+                const typeBadge = `<span class="type-badge ${checkpoint.spec_type}">${checkpoint.spec_type}</span>`;
+
                 if (checkpoint.spec_type === 'variable') {
                     const isPercent = checkpoint.spec_type_detail === '% Of Nominal';
                     const isMin = checkpoint.spec_type_detail === 'Single Limit Min.';
@@ -1378,7 +1585,10 @@
                 return `
                 <div class="checkpoint-card ${checkpoint.applicable ? '' : 'is-na'}" id="checkpoint-${checkpoint.id}" data-spec-type="${checkpoint.spec_type}">
                     <div class="checkpoint-header">
-                        <span class="checkpoint-title">${checkpoint.criteria}</span>
+                        <div style="display: flex; align-items: center;">
+                            ${typeBadge}
+                            <span class="checkpoint-title">${checkpoint.criteria}</span>
+                        </div>
                         <label style="font-size: 0.85rem; font-weight: 500; color: var(--secondary-text); cursor: pointer;">
                             <input type="checkbox" class="applicable-checkbox" ${checkpoint.applicable ? 'checked' : ''} data-id="${checkpoint.id}"> Applicable
                         </label>
@@ -1409,7 +1619,7 @@
                         <div class="form-group-highlight" style="margin-top: 0.75rem;">
                              <div class="form-group observation-group" style="margin-bottom: 0;">
                                 <label>Observation</label>
-                                <textarea placeholder="Enter your observation..." style="min-height: 50px;"></textarea>
+                                <textarea placeholder="Enter your observation..." style="min-height: 120px;"></textarea>
                                 <button class="mic-btn">
                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
                                 </button>
@@ -1511,8 +1721,98 @@
 
             function renderCheckpoints(criteria) {
                 const data = checkpointsData[criteria] || [];
-                checkpointsGrid.innerHTML = data.map(createCheckpointCardHTML).join('');
+                
+                // User Request: Add header inside Accordion with Back, Save, Expand/Summarize
+                const headerHTML = `
+                <div class="evaluation-controls">
+                    <button class="btn-back" style="margin-bottom: 0;" onclick="showScreen('audit-request-details-screen')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back
+                    </button>
+                    <div class="control-group">
+                        <button class="btn btn-primary" onclick="alert('Data Saved Successfully!')">Save</button>
+                        <button class="btn" id="expand-toggle-btn" onclick="toggleExpandAll('${criteria}')">Summarize All</button>
+                    </div>
+                </div>
+                `;
+
+                checkpointsGrid.innerHTML = headerHTML + data.map(createCheckpointCardHTML).join('');
             }
+
+            let isExpanded = true;
+            window.toggleExpandAll = function(criteria) {
+                isExpanded = !isExpanded;
+                const btn = document.getElementById('expand-toggle-btn');
+                if (btn) btn.textContent = isExpanded ? 'Summarize All' : 'Expand All';
+                
+                document.querySelectorAll('.checkpoint-body').forEach(body => {
+                    if (isExpanded) body.classList.remove('hidden');
+                    else body.classList.add('hidden');
+                });
+            };
+
+            // Sync Logic
+            window.showSyncModal = function() {
+                const container = document.getElementById('sync-table-container');
+                const syncModal = document.getElementById('sync-modal');
+                
+                // Collect changes
+                let changes = [];
+                Object.keys(checkpointsData).forEach(cat => {
+                    checkpointsData[cat].forEach(c => {
+                        if (c.actual_value || c.score !== null) {
+                            changes.push({
+                                category: cat,
+                                name: c.name,
+                                value: c.actual_value || 'N/A',
+                                score: c.score !== null ? c.score : 'N/A',
+                                disposition: c.disposition || 'N/A'
+                            });
+                        }
+                    });
+                });
+
+                if (changes.length === 0) {
+                    container.innerHTML = '<p style="color: var(--secondary-text); padding: 1rem;">No changes detected to sync.</p>';
+                } else {
+                    let tableHTML = `
+                    <table class="sync-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Checkpoint</th>
+                                <th>Value</th>
+                                <th>Score</th>
+                                <th>Disposition</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${changes.map(ch => `
+                                <tr>
+                                    <td>${ch.category}</td>
+                                    <td>${ch.name}</td>
+                                    <td>${ch.value}</td>
+                                    <td>${ch.score}</td>
+                                    <td>${ch.disposition}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    `;
+                    container.innerHTML = tableHTML;
+                }
+                syncModal.classList.remove('hidden');
+            };
+
+            window.closeSyncModal = function() {
+                const syncModal = document.getElementById('sync-modal');
+                if (syncModal) syncModal.classList.add('hidden');
+            };
+
+            window.performSync = function() {
+                alert('Data synchronized to web version successfully!');
+                window.closeSyncModal();
+            };
 
             renderAccordions();
 
