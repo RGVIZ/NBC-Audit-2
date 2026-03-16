@@ -876,9 +876,91 @@
             transition: all 0.2s ease !important;
             margin-bottom: 1rem;
         }
-        .criteria-group-header:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            background: #f8fafc !important;
+        /* --- Output Inspection Styles --- */
+        .sample-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 1.25rem;
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .sample-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .sample-cell.pass { border-color: var(--accent-color-green); background-color: #f0fff4; }
+        .sample-cell.fail { border-color: var(--accent-color-red); background-color: #fff5f5; }
+        
+        .sample-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        .sample-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+        }
+        .sample-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .sample-detail-btn {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--primary-color);
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .sample-detail-btn:hover {
+            background: #e2e8f0;
+            color: #1d4ed8;
+        }
+        .sample-attr-toggle {
+            display: flex;
+            gap: 4px;
+        }
+        .attr-btn {
+            flex: 1;
+            padding: 6px 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1.5px solid #cbd5e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+        .attr-btn.active.pass { background: var(--accent-color-green); color: white; border-color: var(--accent-color-green); }
+        .attr-btn.active.fail { background: var(--accent-color-red); color: white; border-color: var(--accent-color-red); }
+
+        .spec-item.sample-size-item {
+            border-left: 2px solid #cbd5e0;
+            padding-left: 1rem;
+            margin-left: 0.5rem;
         }
         
         .score-group {
@@ -1160,6 +1242,35 @@
             </div>
         </div>
 
+        <!-- Sample Detail Modal -->
+        <div id="sample-detail-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0;">Sample Details</h3>
+                    <button class="close-modal" onclick="closeSampleDetailModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label>Observation</label>
+                    <textarea id="sample-observation" placeholder="Enter observation for this specific sample..." style="min-height: 100px;"></textarea>
+                </div>
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label>Attachments</label>
+                    <div class="evidence-group">
+                        <button class="evidence-btn" title="Take Photo">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                        </button>
+                        <button class="evidence-btn" title="Upload File">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        </button>
+                    </div>
+                    <div id="sample-attachments-list" class="attachments-list" style="margin-top: 1rem;"></div>
+                </div>
+                <div class="modal-actions" style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button class="btn" onclick="closeSampleDetailModal()">Cancel</button>
+                    <button id="save-sample-detail-btn" class="btn btn-primary">Save Details</button>
+                </div>
+            </div>
+        </div>
         <!-- Not Applicable Reason Modal -->
         <div id="reason-modal" class="modal-overlay hidden">
             <div class="modal-content">
@@ -1419,12 +1530,55 @@
                 ],
                 'Method': [
                     { id: 8, criteria: 'Method', criteria_group: 'Process Flow', name: 'Is the process flow followed?', spec_type: 'attribute', specification: 'Flow chart adherence', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                ],
+                'Output Inspection': [
+                    { 
+                        id: 9, 
+                        criteria: 'Output Inspection', 
+                        criteria_group: 'Dimensions', 
+                        name: 'Check the outer diameter of the finished part', 
+                        spec_type: 'variable', 
+                        spec_type_detail: 'Bi Lateral', 
+                        specification: { nominal: 25.00, usl: 25.05, lsl: 24.95 }, 
+                        sample_size: 3,
+                        samples: [
+                            { value: '', observation: '', attachments: [] },
+                            { value: '', observation: '', attachments: [] },
+                            { value: '', observation: '', attachments: [] }
+                        ],
+                        applicable: true, 
+                        reason: '' 
+                    },
+                    { 
+                        id: 10, 
+                        criteria: 'Output Inspection', 
+                        criteria_group: 'Visual', 
+                        name: 'Surface finish inspection for scratches or dents', 
+                        spec_type: 'attribute', 
+                        specification: 'No visible surface defects allowed', 
+                        sample_size: 2,
+                        samples: [
+                            { value: '', observation: '', attachments: [] },
+                            { value: '', observation: '', attachments: [] }
+                        ],
+                        applicable: true, 
+                        reason: '' 
+                    }
                 ]
             };
 
             function calculateProgress(criteria) {
                 const data = checkpointsData[criteria] || [];
                 if (data.length === 0) return 0;
+                
+                if (criteria === 'Output Inspection') {
+                    const completed = data.filter(c => {
+                        if (!c.applicable) return true;
+                        return c.samples && c.samples.length > 0 && c.samples.every(s => s.value !== '');
+                    }).length;
+                    return Math.round((completed / data.length) * 100);
+                }
+
                 const completed = data.filter(c => !c.applicable || (c.score !== null && c.disposition !== null)).length;
                 return Math.round((completed / data.length) * 100);
             }
@@ -1433,7 +1587,7 @@
                 const container = document.getElementById('evaluation-accordions');
                 
                 // User Request: Man, Machine, Material are the Group Accordions.
-                const categories = ["Man", "Machine", "Material", "Method"];
+                const categories = ["Man", "Machine", "Material", "Method", "Output Inspection"];
 
                 container.innerHTML = categories.map(cat => {
                     const progress = calculateProgress(cat);
@@ -1443,6 +1597,8 @@
                     // Count Attribute vs Variable
                     const attrCount = checkpointsData[cat].filter(c => c.spec_type === 'attribute').length;
                     const varCount = checkpointsData[cat].filter(c => c.spec_type === 'variable').length;
+
+                    const isOutputInspection = cat === 'Output Inspection';
 
                     return `
                     <div class="group-accordion">
@@ -1471,8 +1627,10 @@
                                             <span class="slider"></span>
                                         </label>
                                     </div>
-                                    <button class="accordion-btn max" data-action="max" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Max</button>
-                                    <button class="accordion-btn min" data-action="min" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Min</button>
+                                    ${!isOutputInspection ? `
+                                        <button class="accordion-btn max" data-action="max" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Max</button>
+                                        <button class="accordion-btn min" data-action="min" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Min</button>
+                                    ` : ''}
                                 </div>
                             </div>
                         </div>
@@ -1541,6 +1699,7 @@
             let currentAccordionCategory = null;
 
             function createCheckpointCardHTML(checkpoint) {
+                const isOutputInspection = checkpoint.criteria === 'Output Inspection';
                 let specHTML = '';
                 const typeBadge = `<span class="type-badge ${checkpoint.spec_type}">${checkpoint.spec_type}</span>`;
 
@@ -1582,15 +1741,61 @@
                                 <span class="spec-label">USL</span>
                                 <input type="text" class="spec-input spec-usl" data-id="${checkpoint.id}" value="${checkpoint.specification.usl}" ${isPercent || isMax ? 'readonly' : ''}>
                             </div>
+
+                            ${isOutputInspection ? `
+                            <div class="spec-item">
+                                <span class="spec-label">Sample Size</span>
+                                <input type="number" class="spec-input sample-size" data-id="${checkpoint.id}" value="${checkpoint.sample_size || 0}" min="1" max="50">
+                            </div>
+                            ` : ''}
                         </div>
                     `;
                 } else {
                     specHTML = `
                         <div class="spec-row">
-                            <div class="spec-item" style="width: 100%;">
+                            <div class="spec-item" style="flex: 1;">
                                 <input type="text" class="spec-input spec-attribute" data-id="${checkpoint.id}" value="${checkpoint.specification}" placeholder="Enter specification...">
                             </div>
+                            ${isOutputInspection ? `
+                            <div class="spec-item" style="width: 100px;">
+                                <span class="spec-label">Sample Size</span>
+                                <input type="number" class="spec-input sample-size" data-id="${checkpoint.id}" value="${checkpoint.sample_size || 0}" min="1" max="50">
+                            </div>
+                            ` : ''}
                         </div>
+                    `;
+                }
+
+                if (isOutputInspection) {
+                    const sampleGridHTML = renderSampleGrid(checkpoint);
+                    return `
+                    <div class="checkpoint-card ${checkpoint.applicable ? '' : 'is-na'}" id="checkpoint-${checkpoint.id}" data-spec-type="${checkpoint.spec_type}">
+                        <div class="checkpoint-header">
+                            <div style="display: flex; align-items: center;">
+                                ${typeBadge}
+                                <span class="checkpoint-title">${checkpoint.criteria}</span>
+                            </div>
+                            <label style="font-size: 0.85rem; font-weight: 500; color: var(--secondary-text); cursor: pointer;">
+                                <input type="checkbox" class="applicable-checkbox" ${checkpoint.applicable ? 'checked' : ''} data-id="${checkpoint.id}"> Applicable
+                            </label>
+                        </div>
+                        <p class="checkpoint-question">${checkpoint.name}</p>
+                        <div class="spec-box">
+                            <div class="spec-header">
+                                Specification
+                            </div>
+                            ${specHTML}
+                        </div>
+                        
+                        <div class="checkpoint-body ${checkpoint.applicable ? '' : 'hidden'}">
+                            <div class="sample-grid-container">
+                                ${sampleGridHTML}
+                            </div>
+                        </div>
+                        <div class="na-reason-display ${checkpoint.applicable ? 'hidden' : ''}">
+                             ${!checkpoint.applicable ? `<p><strong>Not Applicable:</strong> ${checkpoint.reason}</p>` : ''}
+                        </div>
+                    </div>
                     `;
                 }
 
@@ -1719,6 +1924,7 @@
             }
 
             function validateCheckpointValue(checkpoint) {
+                if (checkpoint.criteria === 'Output Inspection') return;
                 if (checkpoint.spec_type !== 'variable') return;
                 if (checkpoint.actual_value === '' || checkpoint.actual_value === undefined || checkpoint.actual_value === null) {
                     checkpoint.score = null;
@@ -1739,6 +1945,148 @@
                     checkpoint.disposition = 'NC';
                 }
             }
+
+            function renderSampleGrid(checkpoint) {
+                const sampleSize = checkpoint.sample_size || 0;
+                const columns = Math.min(sampleSize, 5);
+                const gridStyle = `grid-template-columns: repeat(${columns}, 1fr);`;
+                
+                let samplesHTML = '';
+                for (let i = 0; i < sampleSize; i++) {
+                    const sample = checkpoint.samples[i] || { value: '', observation: '', attachments: [] };
+                    let statusClass = '';
+                    if (checkpoint.spec_type === 'variable' && sample.value !== '') {
+                        const val = parseFloat(sample.value);
+                        const usl = checkpoint.specification.usl;
+                        const lsl = checkpoint.specification.lsl;
+                        if (val >= lsl && val <= usl) statusClass = 'pass';
+                        else statusClass = 'fail';
+                    } else if (checkpoint.spec_type === 'attribute' && sample.value !== '') {
+                        statusClass = sample.value === 'Pass' ? 'pass' : 'fail';
+                    }
+
+                    samplesHTML += `
+                    <div class="sample-cell ${statusClass}" data-checkpoint-id="${checkpoint.id}" data-sample-index="${i}">
+                        <div class="sample-header">
+                            <span>S${i + 1}</span>
+                            <button class="sample-detail-btn" onclick="openSampleDetailModal(${checkpoint.id}, ${i})" title="Add Observation/Attachments">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                            </button>
+                        </div>
+                        ${checkpoint.spec_type === 'variable' ? `
+                            <input type="number" class="sample-input" value="${sample.value}" placeholder="Value" onchange="updateSampleValue(${checkpoint.id}, ${i}, this.value)">
+                        ` : `
+                            <div class="sample-attr-toggle">
+                                <button class="attr-btn pass ${sample.value === 'Pass' ? 'active' : ''}" onclick="updateSampleValue(${checkpoint.id}, ${i}, 'Pass')">P</button>
+                                <button class="attr-btn fail ${sample.value === 'Fail' ? 'active' : ''}" onclick="updateSampleValue(${checkpoint.id}, ${i}, 'Fail')">F</button>
+                            </div>
+                        `}
+                    </div>
+                    `;
+                }
+
+                return `<div class="sample-grid" style="${gridStyle}">${samplesHTML}</div>`;
+            }
+
+            let currentEditingSample = null;
+
+            window.openSampleDetailModal = function(checkpointId, sampleIndex) {
+                const criteria = document.getElementById('evaluation-category-title').textContent;
+                const checkpoint = checkpointsData[criteria].find(c => c.id === checkpointId);
+                const sample = checkpoint.samples[sampleIndex];
+                
+                currentEditingSample = { checkpointId, sampleIndex, criteria };
+                
+                document.getElementById('sample-observation').value = sample.observation || '';
+                renderSampleAttachments(sample.attachments || []);
+                
+                document.getElementById('sample-detail-modal').classList.remove('hidden');
+            };
+
+            window.closeSampleDetailModal = function() {
+                document.getElementById('sample-detail-modal').classList.add('hidden');
+                currentEditingSample = null;
+            };
+
+            function renderSampleAttachments(attachments) {
+                const list = document.getElementById('sample-attachments-list');
+                list.innerHTML = attachments.map((att, idx) => `
+                    <div class="attachment-item" style="display: flex; align-items: center; justify-content: space-between; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; margin-bottom: 4px;">
+                        <span style="font-size: 0.8rem;">${att.name}</span>
+                        <button onclick="removeSampleAttachment(${idx})" style="background: none; border: none; color: var(--accent-color-red); cursor: pointer;">&times;</button>
+                    </div>
+                `).join('');
+            }
+
+            window.removeSampleAttachment = function(index) {
+                if (!currentEditingSample) return;
+                const { checkpointId, sampleIndex, criteria } = currentEditingSample;
+                const checkpoint = checkpointsData[criteria].find(c => c.id === checkpointId);
+                const sample = checkpoint.samples[sampleIndex];
+                
+                sample.attachments.splice(index, 1);
+                renderSampleAttachments(sample.attachments);
+            };
+
+            document.getElementById('save-sample-detail-btn').addEventListener('click', () => {
+                if (!currentEditingSample) return;
+                const { checkpointId, sampleIndex, criteria } = currentEditingSample;
+                const checkpoint = checkpointsData[criteria].find(c => c.id === checkpointId);
+                const sample = checkpoint.samples[sampleIndex];
+                
+                sample.observation = document.getElementById('sample-observation').value;
+                // Attachments are already updated in the array
+                
+                closeSampleDetailModal();
+            });
+
+            window.updateSampleValue = function(checkpointId, sampleIndex, value) {
+                const criteria = document.getElementById('evaluation-category-title').textContent;
+                const checkpoint = checkpointsData[criteria].find(c => c.id === checkpointId);
+                
+                if (!checkpoint.samples[sampleIndex]) {
+                    checkpoint.samples[sampleIndex] = { value: '', observation: '', attachments: [] };
+                }
+                
+                checkpoint.samples[sampleIndex].value = value;
+                
+                // Re-render the grid for this card
+                const card = document.getElementById(`checkpoint-${checkpointId}`);
+                const gridContainer = card.querySelector('.sample-grid-container');
+                gridContainer.innerHTML = renderSampleGrid(checkpoint);
+                
+                // Update progress in accordion
+                renderAccordions();
+            };
+
+            // Handle Sample Size Change
+            document.addEventListener('change', (e) => {
+                if (e.target.classList.contains('sample-size')) {
+                    const checkpointId = parseInt(e.target.dataset.id);
+                    const newSize = parseInt(e.target.value) || 0;
+                    const criteria = document.getElementById('evaluation-category-title').textContent;
+                    const checkpoint = checkpointsData[criteria].find(c => c.id === checkpointId);
+                    
+                    checkpoint.sample_size = newSize;
+                    
+                    // Adjust samples array
+                    if (checkpoint.samples.length < newSize) {
+                        for (let i = checkpoint.samples.length; i < newSize; i++) {
+                            checkpoint.samples.push({ value: '', observation: '', attachments: [] });
+                        }
+                    } else if (checkpoint.samples.length > newSize) {
+                        checkpoint.samples = checkpoint.samples.slice(0, newSize);
+                    }
+                    
+                    // Re-render the grid
+                    const card = document.getElementById(`checkpoint-${checkpointId}`);
+                    const gridContainer = card.querySelector('.sample-grid-container');
+                    gridContainer.innerHTML = renderSampleGrid(checkpoint);
+                    
+                    // Update progress
+                    renderAccordions();
+                }
+            });
 
             function renderCheckpoints(criteria) {
                 const data = checkpointsData[criteria] || [];
@@ -1869,7 +2217,7 @@
                 const dispositionBtns = card.querySelectorAll('.disposition-btn');
                 const actionTypeBtns = card.querySelectorAll('.action-type-btn');
 
-                if (updates.score !== undefined) {
+                if (updates.score !== undefined && scoreOptions) {
                     scoreOptions.querySelectorAll('.score-option').forEach(el => el.classList.remove('active', 'score-0', 'score-4'));
                     const activeScore = scoreOptions.querySelector(`[data-value="${updates.score}"]`);
                     if(activeScore) {
@@ -1878,7 +2226,7 @@
                     }
                 }
 
-                if (updates.disposition !== undefined) {
+                if (updates.disposition !== undefined && dispositionBtns.length > 0) {
                     dispositionBtns.forEach(el => el.classList.remove('active', 'nc', 'ofi', 'compliant'));
                     const activeDisp = card.querySelector(`.disposition-btn[data-value="${updates.disposition}"]`);
                     if(activeDisp) {
@@ -1895,7 +2243,7 @@
                     });
                 }
 
-                if (updates.action_type !== undefined) {
+                if (updates.action_type !== undefined && actionTypeBtns.length > 0) {
                     actionTypeBtns.forEach(btn => {
                         btn.classList.remove('active', 'capa', 'prs');
                         if (updates.action_type && btn.dataset.value === updates.action_type) {
