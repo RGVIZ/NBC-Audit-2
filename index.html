@@ -933,10 +933,57 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            position: relative;
         }
         .sample-detail-btn:hover {
             background: #e2e8f0;
             color: #1d4ed8;
+        }
+        .sample-detail-btn.has-content {
+            background: #ebf4ff;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+        .sample-detail-btn.has-content::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-color-red);
+            border-radius: 50%;
+            border: 2px solid white;
+            z-index: 10;
+        }
+
+        .mic-btn-inline {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--secondary-text);
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .mic-btn-inline:hover {
+            background: #edf2f7;
+            color: var(--accent-color-red);
+        }
+        .mic-btn-inline.recording {
+            color: var(--accent-color-red);
+            background: #fff5f5;
+            border-color: var(--accent-color-red);
+            animation: pulse-red 1.5s infinite;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(197, 48, 48, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(197, 48, 48, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(197, 48, 48, 0); }
         }
         .sample-attr-toggle {
             display: flex;
@@ -1251,7 +1298,12 @@
                 </div>
                 <div class="form-group">
                     <label>Observation</label>
-                    <textarea id="sample-observation" placeholder="Enter observation for this specific sample..." style="min-height: 100px;"></textarea>
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                        <textarea id="sample-observation" placeholder="Enter observation for this specific sample..." style="min-height: 100px; flex: 1;"></textarea>
+                        <button class="mic-btn-inline" id="sample-mic-btn" title="Speech to Text">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="form-group" style="margin-top: 1.5rem;">
                     <label>Attachments</label>
@@ -1261,6 +1313,9 @@
                         </button>
                         <button class="evidence-btn" title="Upload File">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        </button>
+                        <button class="evidence-btn" id="sample-voice-btn" title="Voice Recording">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
                         </button>
                     </div>
                     <div id="sample-attachments-list" class="attachments-list" style="margin-top: 1rem;"></div>
@@ -1954,6 +2009,8 @@
                 let samplesHTML = '';
                 for (let i = 0; i < sampleSize; i++) {
                     const sample = checkpoint.samples[i] || { value: '', observation: '', attachments: [] };
+                    const hasContent = (sample.observation && sample.observation.trim() !== '') || (sample.attachments && sample.attachments.length > 0);
+                    
                     let statusClass = '';
                     if (checkpoint.spec_type === 'variable' && sample.value !== '') {
                         const val = parseFloat(sample.value);
@@ -1969,7 +2026,7 @@
                     <div class="sample-cell ${statusClass}" data-checkpoint-id="${checkpoint.id}" data-sample-index="${i}">
                         <div class="sample-header">
                             <span>S${i + 1}</span>
-                            <button class="sample-detail-btn" onclick="openSampleDetailModal(${checkpoint.id}, ${i})" title="Add Observation/Attachments">
+                            <button class="sample-detail-btn ${hasContent ? 'has-content' : ''}" onclick="openSampleDetailModal(${checkpoint.id}, ${i})" title="Add Observation/Attachments">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                             </button>
                         </div>
@@ -2036,6 +2093,13 @@
                 
                 sample.observation = document.getElementById('sample-observation').value;
                 // Attachments are already updated in the array
+                
+                // Re-render the grid for this card to show the highlight if content was added
+                const card = document.getElementById(`checkpoint-${checkpointId}`);
+                if (card) {
+                    const gridContainer = card.querySelector('.sample-grid-container');
+                    if (gridContainer) gridContainer.innerHTML = renderSampleGrid(checkpoint);
+                }
                 
                 closeSampleDetailModal();
             });
@@ -2436,6 +2500,36 @@
                 renderAccordions();
             });
 
+            // Speech to Text for Sample Observation
+            document.getElementById('sample-mic-btn').addEventListener('click', () => {
+                const textarea = document.getElementById('sample-observation');
+                const btn = document.getElementById('sample-mic-btn');
+                window.startSpeechRecognition(textarea, btn);
+            });
+
+            // Voice Recording for Sample Attachments
+            document.getElementById('sample-voice-btn').addEventListener('click', () => {
+                startVoiceRecording();
+            });
+
+            function startVoiceRecording() {
+                if (!currentEditingSample) return;
+                const btn = document.getElementById('sample-voice-btn');
+                btn.classList.add('recording');
+                
+                // Mock recording process
+                setTimeout(() => {
+                    btn.classList.remove('recording');
+                    const { checkpointId, sampleIndex, criteria } = currentEditingSample;
+                    const checkpoint = checkpointsData[criteria].find(c => c.id === checkpointId);
+                    const sample = checkpoint.samples[sampleIndex];
+                    
+                    const timestamp = new Date().toLocaleTimeString();
+                    sample.attachments.push({ name: `Voice Recording ${timestamp}.mp3`, type: 'audio' });
+                    renderSampleAttachments(sample.attachments);
+                }, 3000);
+            }
+
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (SpeechRecognition) {
                 const recognition = new SpeechRecognition();
@@ -2445,16 +2539,18 @@
                 recognition.maxAlternatives = 1;
 
                 let targetTextarea = null;
+                let targetMicBtn = null;
 
                 recognition.onstart = () => {
-                    const micBtn = targetTextarea.nextElementSibling;
-                    micBtn.classList.add('recording');
+                    const micBtn = targetMicBtn || targetTextarea.nextElementSibling;
+                    if (micBtn) micBtn.classList.add('recording');
                 };
 
                 recognition.onend = () => {
-                    const micBtn = targetTextarea.nextElementSibling;
-                    micBtn.classList.remove('recording');
+                    const micBtn = targetMicBtn || targetTextarea.nextElementSibling;
+                    if (micBtn) micBtn.classList.remove('recording');
                     targetTextarea = null;
+                    targetMicBtn = null;
                 };
 
                 recognition.onresult = (event) => {
@@ -2462,9 +2558,10 @@
                     targetTextarea.value += transcript;
                 };
                 
-                window.startSpeechRecognition = (textarea) => {
+                window.startSpeechRecognition = (textarea, btn = null) => {
                     if (targetTextarea) return; // Recognition already in progress
                     targetTextarea = textarea;
+                    targetMicBtn = btn;
                     recognition.start();
                 };
 
