@@ -1,5 +1,5 @@
 {
   "name": "PQA Audit",
-  "description": "A tablet-friendly mobile audit application for managing audit plans and requests.",
+  "description": "A tablet-friendly mobile audit application for managing PQA, BE, and QMS audit plans and requests.",
   "requestFramePermissions": []
 }

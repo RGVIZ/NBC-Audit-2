@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "A tablet-friendly mobile audit application for managing audit plans and requests.",
   "scripts": {
-    "build": "mkdir -p dist && cp index.html dist/",
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "mkdir -p dist && cp index.html server.js dist/",
     "lint": "echo 'No linting needed'"
   },
   "dependencies": {},
