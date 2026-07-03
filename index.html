@@ -1034,6 +1034,12 @@
         }
         .score-option.active.zero { background: var(--accent-color-red); color: white; border-color: var(--accent-color-red); }
         .score-option.active.four { background: var(--accent-color-green); color: white; border-color: var(--accent-color-green); }
+        .score-option.active.score-5 { background-color: var(--accent-color-green) !important; color: white !important; border-color: var(--accent-color-green) !important; }
+        .score-option.active.score-4 { background-color: #34d399 !important; color: white !important; border-color: #34d399 !important; }
+        .score-option.active.score-3 { background-color: var(--accent-color-yellow) !important; color: #1e293b !important; border-color: var(--accent-color-yellow) !important; }
+        .score-option.active.score-2 { background-color: #f59e0b !important; color: white !important; border-color: #f59e0b !important; }
+        .score-option.active.score-1 { background-color: #ef4444 !important; color: white !important; border-color: #ef4444 !important; }
+        .score-option.active.score-0 { background-color: var(--accent-color-red) !important; color: white !important; border-color: var(--accent-color-red) !important; }
 
         .disposition-group {
             display: flex;
@@ -1349,6 +1355,26 @@
             </div>
         </div>
 
+        <!-- BE Audit Request Details Screen -->
+        <div id="be-audit-request-details-screen" class="screen hidden">
+            <div id="breadcrumb-be-details" class="breadcrumb"></div>
+            <button class="btn-back" data-back-to="be-audit-requests-screen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back
+            </button>
+            <div class="details-card">
+                <h3>Audit Request View</h3>
+                <hr style="margin: 1rem 0; border-color: var(--border-color);">
+                <div class="details-grid" id="be-details-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem 1.25rem;">
+                    <!-- 20 details items will be dynamically inserted here -->
+                </div>
+                <h3 class="questions-header">Audit Evaluation</h3>
+                <div id="be-evaluation-accordions">
+                    <!-- BE 1S-5S Accordions will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
         <!-- Audit Evaluation Screen -->
         <div id="audit-evaluation-screen" class="screen hidden">
             <div id="breadcrumb-evaluation" class="breadcrumb"></div>
@@ -1453,10 +1479,98 @@
             ];
 
             const beAuditRequests = [
-                { start_date: '2/26/2026', end_date: '3/3/2026', status: 'new', title: 'Operational Excellence Audit', division: 'BB', category: 'Manufacturing', area: 'Assembly' },
-                { start_date: '2/21/2026', end_date: '2/25/2026', status: 'verified', title: 'Internal Process Excellence', division: 'TRB', category: 'Manufacturing', area: 'Grinding' },
-                { start_date: '3/5/2026', end_date: '3/10/2026', status: 'new', title: 'Safety Compliance Audit', division: 'LDB', category: 'Non Manufacturing', area: 'Office' },
-                { start_date: '2/11/2026', end_date: '2/15/2026', status: 'execute', title: 'Maturity Level Assessment', division: 'BB', category: 'Manufacturing', area: 'PreGrinding' },
+                {
+                    audit_number: 'AUD-BE-2026-001',
+                    title: 'Operational Excellence Audit',
+                    type: 'Business Excellence',
+                    plant: 'Plant 1 - Main',
+                    division: 'BB',
+                    category: 'Manufacturing',
+                    area: 'Assembly',
+                    sub_area: 'Line 2 Assembly',
+                    start_date: '2/26/2026',
+                    end_date: '3/3/2026',
+                    auditor: 'Norman Hemmings',
+                    actual_start_date: '2/26/2026',
+                    actual_end_date: '3/3/2026',
+                    auditee: 'Assembly Team',
+                    auditee_manager: 'Marcus Aurelius',
+                    grace_period: '3 Days',
+                    template_name: 'BE Standard Template v2',
+                    status: 'new',
+                    self_audit_due_date: '2/25/2026',
+                    self_audit_start_date: '2/20/2026',
+                    self_audit_end_date: '2/24/2026'
+                },
+                {
+                    audit_number: 'AUD-BE-2026-002',
+                    title: 'Internal Process Excellence',
+                    type: 'Process Improvement',
+                    plant: 'Plant 2 - South',
+                    division: 'TRB',
+                    category: 'Manufacturing',
+                    area: 'Grinding',
+                    sub_area: 'Cylinder Grinding Section',
+                    start_date: '2/21/2026',
+                    end_date: '2/25/2026',
+                    auditor: 'Jane Doe',
+                    actual_start_date: '2/21/2026',
+                    actual_end_date: '2/25/2026',
+                    auditee: 'Grinding Team',
+                    auditee_manager: 'Sarah Jenkins',
+                    grace_period: '2 Days',
+                    template_name: 'Process Maturity Checklist',
+                    status: 'verified',
+                    self_audit_due_date: '2/20/2026',
+                    self_audit_start_date: '2/15/2026',
+                    self_audit_end_date: '2/19/2026'
+                },
+                {
+                    audit_number: 'AUD-BE-2026-003',
+                    title: 'Safety Compliance Audit',
+                    type: 'EHS & BE Integrated',
+                    plant: 'HQ Office',
+                    division: 'LDB',
+                    category: 'Non Manufacturing',
+                    area: 'Office',
+                    sub_area: 'Admin Block 3F',
+                    start_date: '3/5/2026',
+                    end_date: '3/10/2026',
+                    auditor: 'John Smith',
+                    actual_start_date: '3/5/2026',
+                    actual_end_date: '3/10/2026',
+                    auditee: 'Logistics Team',
+                    auditee_manager: 'Alan Turing',
+                    grace_period: '5 Days',
+                    template_name: 'Office Excellence Framework',
+                    status: 'new',
+                    self_audit_due_date: '3/4/2026',
+                    self_audit_start_date: '3/1/2026',
+                    self_audit_end_date: '3/3/2026'
+                },
+                {
+                    audit_number: 'AUD-BE-2026-004',
+                    title: 'Maturity Level Assessment',
+                    type: 'Strategic BE Review',
+                    plant: 'Plant 1 - Main',
+                    division: 'BB',
+                    category: 'Manufacturing',
+                    area: 'PreGrinding',
+                    sub_area: 'Raw Prepping Zone',
+                    start_date: '2/11/2026',
+                    end_date: '2/15/2026',
+                    auditor: 'Peter Pan',
+                    actual_start_date: '2/11/2026',
+                    actual_end_date: '2/15/2026',
+                    auditee: 'Production Team',
+                    auditee_manager: 'Captain Hook',
+                    grace_period: '1 Day',
+                    template_name: 'Maturity Standard Audit',
+                    status: 'execute',
+                    self_audit_due_date: '2/10/2026',
+                    self_audit_start_date: '2/5/2026',
+                    self_audit_end_date: '2/9/2026'
+                }
             ];
 
             const auditPlans = [
@@ -1464,12 +1578,15 @@
                 { title: 'Safety Compliance Check', type: 'Area Audit', process: 'Warehouse B', plant: 'Main', line: 'Gamma', auditor: 'John Smith', auditee: 'Logistics Team', start: '2/28/2026', end: '3/6/2026' },
             ];
 
+            let currentModule = 'PQA';
+
             function updateBreadcrumbs(screenId, pathData = []) {
                 const breadcrumbContainers = {
                     'audit-requests-screen': 'breadcrumb-ar',
                     'be-audit-requests-screen': 'breadcrumb-be-ar',
                     'audit-plan-acceptance-screen': 'breadcrumb-apa',
                     'audit-request-details-screen': 'breadcrumb-details',
+                    'be-audit-request-details-screen': 'breadcrumb-be-details',
                     'audit-evaluation-screen': 'breadcrumb-evaluation'
                 };
 
@@ -1517,6 +1634,16 @@
             }
 
             function showScreen(screenId, breadcrumbPath = []) {
+                if (screenId.startsWith('be-') || screenId === 'be-audit-screen') {
+                    currentModule = 'BE';
+                } else if (screenId === 'master-home-screen') {
+                    // Do nothing
+                } else if (screenId === 'audit-evaluation-screen') {
+                    // Keep currentModule as is
+                } else {
+                    currentModule = 'PQA';
+                }
+
                 screens.forEach(screen => {
                     screen.classList.add('hidden');
                 });
@@ -1535,6 +1662,10 @@
                     }
                     
                     updateBreadcrumbs(screenId, breadcrumbPath);
+
+                    if (screenId === 'be-audit-request-details-screen') {
+                        renderBEEvaluationAccordions();
+                    }
                 }
             }
 
@@ -1548,6 +1679,8 @@
                         path = [{label: 'Audit Plan Acceptance'}];
                     } else if (targetScreenId === 'audit-request-details-screen') {
                         path = [{label: 'Audit Request', screen: 'audit-requests-screen'}, {label: 'View'}];
+                    } else if (targetScreenId === 'be-audit-request-details-screen') {
+                        path = [{label: 'Audit Request', screen: 'be-audit-requests-screen'}, {label: 'View'}];
                     }
                     showScreen(targetScreenId, path);
                 }
@@ -1565,7 +1698,11 @@
                     } else if (target === 'be-audit-requests-screen') {
                         showScreen('be-audit-requests-screen', [{label: 'Audit Request'}]);
                     } else if (target === 'audit-request-details-screen') {
-                        showScreen('audit-request-details-screen', [{label: 'Audit Request', screen: 'audit-requests-screen'}, {label: 'View'}]);
+                        if (currentModule === 'BE') {
+                            showScreen('be-audit-request-details-screen', [{label: 'Audit Request', screen: 'be-audit-requests-screen'}, {label: 'View'}]);
+                        } else {
+                            showScreen('audit-request-details-screen', [{label: 'Audit Request', screen: 'audit-requests-screen'}, {label: 'View'}]);
+                        }
                     } else {
                         showScreen(target);
                     }
@@ -1650,10 +1787,149 @@
             }
 
             // BE Audit Requests Cards Rendering & Tab Filtering
+            const detailFields = [
+                { key: 'audit_number', label: 'Audit Number' },
+                { key: 'type', label: 'Audit Type' },
+                { key: 'plant', label: 'Plant' },
+                { key: 'division', label: 'Division' },
+                { key: 'category', label: 'Category' },
+                { key: 'area', label: 'Area' },
+                { key: 'sub_area', label: 'Sub Area' },
+                { key: 'start_date', label: 'Start Date' },
+                { key: 'end_date', label: 'End Date' },
+                { key: 'auditor', label: 'Auditors' },
+                { key: 'actual_start_date', label: 'Actual Start Date' },
+                { key: 'actual_end_date', label: 'Actual End Date' },
+                { key: 'auditee', label: 'Auditee' },
+                { key: 'auditee_manager', label: 'Auditee Manager' },
+                { key: 'grace_period', label: 'Grace Period' },
+                { key: 'template_name', label: 'Template Name' },
+                { key: 'status', label: 'Status' },
+                { key: 'self_audit_due_date', label: 'Self Audit Due Date' },
+                { key: 'self_audit_start_date', label: 'Self Audit Start Date' },
+                { key: 'self_audit_end_date', label: 'Self Audit End Date' },
+            ];
+
+            function renderBEAuditDetails(audit) {
+                const grid = document.getElementById('be-details-grid');
+                if (!grid) return;
+                
+                grid.innerHTML = detailFields.map(field => {
+                    let val = audit[field.key] || 'N/A';
+                    if (field.key === 'status') {
+                        val = val.charAt(0).toUpperCase() + val.slice(1);
+                    }
+                    return `
+                        <div class="detail-item">
+                            <h4>${field.label}</h4>
+                            <p>${val}</p>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function renderBEEvaluationAccordions() {
+                const container = document.getElementById('be-evaluation-accordions');
+                if (!container) return;
+                
+                const categories = ["1S", "2S", "3S", "4S", "5S"];
+                
+                container.innerHTML = categories.map(cat => {
+                    const progress = calculateProgress(cat);
+                    const isAllNA = checkpointsData[cat].every(c => !c.applicable);
+                    const naReason = isAllNA ? (checkpointsData[cat][0]?.reason || 'Not applicable') : '';
+                    
+                    return `
+                    <div class="group-accordion">
+                        <div class="group-header be-question-item ${isAllNA ? 'is-na' : ''}" data-category="${cat}">
+                            <div class="accordion-content-wrapper" style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0; font-weight: 700;">${cat}</h3>
+                                    ${!isAllNA ? `<div class="progress-bar" style="width: ${progress}%"></div>` : ''}
+                                    ${isAllNA ? `<p style="font-size: 0.8rem; margin-top: 0.25rem;">Reason: ${naReason}</p>` : ''}
+                                </div>
+                                <div class="accordion-actions" style="display: flex; align-items: center; gap: 1rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-right: 1rem;">
+                                        <span class="toggle-label" style="font-size: 0.85rem; font-weight: 700; min-width: 100px; text-align: right;">${isAllNA ? 'Not Applicable' : 'Applicable'}</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" class="be-na-toggle" data-category="${cat}" ${!isAllNA ? 'checked' : ''}>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <button class="accordion-btn max" data-action="max" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Max</button>
+                                    <button class="accordion-btn min" data-action="min" data-category="${cat}" ${isAllNA ? 'disabled' : ''}>Min</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+                
+                // Event listener for opening BE checkpoints
+                container.querySelectorAll('.group-header').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        if (e.target.closest('.accordion-btn') || e.target.closest('.toggle-switch')) return;
+                        if (item.classList.contains('is-na')) return;
+                        
+                        const cat = item.dataset.category;
+                        document.getElementById('evaluation-category-title').textContent = cat;
+                        renderCheckpoints(cat);
+                        showScreen('audit-evaluation-screen');
+                    });
+                });
+                
+                // Event listener for NA toggle in BE
+                container.querySelectorAll('.be-na-toggle').forEach(toggle => {
+                    toggle.addEventListener('change', (e) => {
+                        const cat = toggle.dataset.category;
+                        const label = toggle.closest('.accordion-actions').querySelector('.toggle-label');
+                        if (!e.target.checked) {
+                            label.textContent = 'Not Applicable';
+                            currentAccordionCategory = cat;
+                            currentCheckpointCard = null;
+                            reasonModal.classList.remove('hidden');
+                        } else {
+                            label.textContent = 'Applicable';
+                            checkpointsData[cat].forEach(c => {
+                                c.applicable = true;
+                                c.reason = '';
+                            });
+                            renderBEEvaluationAccordions();
+                        }
+                    });
+                });
+                
+                // Event listener for Max/Min buttons in BE
+                container.querySelectorAll('.accordion-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const action = btn.dataset.action;
+                        const cat = btn.dataset.category;
+                        const data = checkpointsData[cat];
+                        
+                        if (action === 'max') {
+                            data.forEach(c => {
+                                c.score = 4;
+                                c.disposition = 'Compliant';
+                                c.applicable = true;
+                            });
+                            renderBEEvaluationAccordions();
+                        } else if (action === 'min') {
+                            data.forEach(c => {
+                                c.score = 0;
+                                c.disposition = 'NC';
+                                c.applicable = true;
+                            });
+                            renderBEEvaluationAccordions();
+                        }
+                    });
+                });
+            }
+
             function createBEAuditCard(audit) {
                 const statusClass = `status-${audit.status.toLowerCase().replace(' ', '-')}`;
                 return `
-                    <div class="audit-card" style="cursor: default;">
+                    <div class="audit-card clickable-be-card" data-audit-number="${audit.audit_number}" style="cursor: pointer;">
                         <div class="card-header">
                             <div class="card-date">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
@@ -1685,6 +1961,18 @@
                 }
                 
                 grid.innerHTML = filtered.map(createBEAuditCard).join('');
+                
+                grid.querySelectorAll('.clickable-be-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const num = card.dataset.auditNumber;
+                        const audit = beAuditRequests.find(a => a.audit_number === num);
+                        if (audit) {
+                            renderBEAuditDetails(audit);
+                            renderBEEvaluationAccordions();
+                            showScreen('be-audit-request-details-screen', [{label: 'Audit Request', screen: 'be-audit-requests-screen'}, {label: 'View'}]);
+                        }
+                    });
+                });
             }
 
             const tabsBeAr = document.getElementById('tabs-be-ar');
@@ -1808,6 +2096,29 @@
                         applicable: true, 
                         reason: '' 
                     }
+                ],
+                '1S': [
+                    { id: 101, criteria: '1S', criteria_group: 'Clutter Control', name: 'Are all unnecessary items identified and tagged?', spec_type: 'attribute', specification: 'No unneeded items in workspace', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 102, criteria: '1S', criteria_group: 'Red Tagging', name: 'Are red tags filled out completely and logged?', spec_type: 'attribute', specification: 'Red tags must be detailed', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 103, criteria: '1S', criteria_group: 'Floors & Aisles', name: 'Are aisles, walkways, and emergency exits clear?', spec_type: 'attribute', specification: 'Zero obstruction permitted', applicable: true, reason: '', score: null, disposition: null, actual_value: '' }
+                ],
+                '2S': [
+                    { id: 201, criteria: '2S', criteria_group: 'Tool Storage', name: 'Are tools stored in designated shadow boards or locations?', spec_type: 'attribute', specification: 'All tools must have shadow indicators', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 202, criteria: '2S', criteria_group: 'Labeling', name: 'Are storage racks, bins, and containers clearly labeled?', spec_type: 'attribute', specification: 'Labels must match contents', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 203, criteria: '2S', criteria_group: 'Visual Aids', name: 'Are safety boundary markings on floors intact?', spec_type: 'attribute', specification: 'Clear boundaries shown', applicable: true, reason: '', score: null, disposition: null, actual_value: '' }
+                ],
+                '3S': [
+                    { id: 301, criteria: '3S', criteria_group: 'Daily Cleaning', name: 'Are daily cleaning schedules updated and followed?', spec_type: 'attribute', specification: 'Cleaning logs up-to-date', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 302, criteria: '3S', criteria_group: 'Equipment', name: 'Is machinery clean and free from oil/fluid leaks?', spec_type: 'attribute', specification: 'Zero leakage tolerated', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 303, criteria: '3S', criteria_group: 'Trash Bins', name: 'Are waste bins emptied regularly and in good condition?', spec_type: 'attribute', specification: 'Trash bin level < 80%', applicable: true, reason: '', score: null, disposition: null, actual_value: '' }
+                ],
+                '4S': [
+                    { id: 401, criteria: '4S', criteria_group: 'Documentation', name: 'Are standard operating procedures (SOPs) current and readable?', spec_type: 'attribute', specification: 'SOPs up to date', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 402, criteria: '4S', criteria_group: 'Responsibilities', name: 'Is the 5S duty roster clearly visible to all employees?', spec_type: 'attribute', specification: 'Roster posted on bulletin', applicable: true, reason: '', score: null, disposition: null, actual_value: '' }
+                ],
+                '5S': [
+                    { id: 501, criteria: '5S', criteria_group: 'Self Audits', name: 'Are regular self-audits performed on schedule?', spec_type: 'attribute', specification: 'Self audits documented monthly', applicable: true, reason: '', score: null, disposition: null, actual_value: '' },
+                    { id: 502, criteria: '5S', criteria_group: 'Mindset', name: 'Are employees aware of their 5S responsibilities?', spec_type: 'attribute', specification: 'Verbal confirmation of role', applicable: true, reason: '', score: null, disposition: null, actual_value: '' }
                 ]
             };
 
@@ -1828,6 +2139,10 @@
             }
 
             function renderAccordions() {
+                if (currentModule === 'BE') {
+                    renderBEEvaluationAccordions();
+                    return;
+                }
                 const container = document.getElementById('evaluation-accordions');
                 
                 // User Request: Man, Machine, Material are the Group Accordions.
@@ -1923,7 +2238,7 @@
 
                         if (action === 'max') {
                             data.forEach(c => {
-                                c.score = 4;
+                                c.score = 5;
                                 c.disposition = 'Compliant';
                                 c.applicable = true;
                             });
@@ -2089,7 +2404,96 @@
                         <div class="form-group-highlight" style="margin-top: 0.75rem;">
                              <div class="form-group observation-group" style="margin-bottom: 0;">
                                 <label>Observation</label>
-                                <textarea placeholder="Enter your observation..." style="min-height: 120px;"></textarea>
+                                <textarea class="checkpoint-observation" data-id="${checkpoint.id}" placeholder="Enter your observation..." style="min-height: 120px;">${checkpoint.observation || ''}</textarea>
+                                <button class="mic-btn">
+                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group-highlight" style="margin-top: 0.75rem;">
+                            <div class="form-row side-by-side">
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Disposition</label>
+                                    <div class="disposition-group">
+                                        <button class="disposition-btn ${checkpoint.disposition === 'NC' ? 'active nc' : ''}" data-value="NC" data-id="${checkpoint.id}">NC</button>
+                                        <button class="disposition-btn ${checkpoint.disposition === 'OFI' ? 'active ofi' : ''}" data-value="OFI" data-id="${checkpoint.id}">OFI</button>
+                                        <button class="disposition-btn ${checkpoint.disposition === 'Compliant' ? 'active compliant' : ''}" data-value="Compliant" data-id="${checkpoint.id}">Compliant</button>
+                                    </div>
+                                </div>
+                                 <div class="form-group" style="flex: 1;">
+                                    <label>Action Type</label>
+                                    <div class="disposition-group">
+                                        <button class="action-type-btn ${checkpoint.action_type === 'CAPA' ? 'active capa' : ''}" data-value="CAPA" data-id="${checkpoint.id}">CAPA</button>
+                                        <button class="action-type-btn ${checkpoint.action_type === 'PRS' ? 'active prs' : ''}" data-value="PRS" data-id="${checkpoint.id}">PRS</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-highlight" style="margin-top: 0.75rem;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Supporting Evidences</label>
+                                <div class="evidence-group">
+                                    <button class="evidence-btn" title="Camera"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></button>
+                                    <button class="evidence-btn" title="Attach File"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button>
+                                    <button class="evidence-btn" title="Voice Recorder"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button>
+                                    <button class="evidence-btn" title="View Evidences"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="na-reason-display ${checkpoint.applicable ? 'hidden' : ''}">
+                         ${!checkpoint.applicable ? `<p><strong>Not Applicable:</strong> ${checkpoint.reason}</p>` : ''}
+                    </div>
+                </div>
+                `;
+            }
+
+            function createBECheckpointCardHTML(checkpoint) {
+                return `
+                <div class="checkpoint-card ${checkpoint.applicable ? '' : 'is-na'}" id="checkpoint-${checkpoint.id}">
+                    <div class="checkpoint-header">
+                        <div style="display: flex; align-items: center;">
+                            <span class="checkpoint-title" style="font-weight: 700; color: #475569; font-size: 0.95rem;">${checkpoint.criteria}</span>
+                        </div>
+                        <label style="font-size: 0.85rem; font-weight: 500; color: var(--secondary-text); cursor: pointer; display: flex; align-items: center; gap: 0.25rem;">
+                            <input type="checkbox" class="applicable-checkbox" ${checkpoint.applicable ? 'checked' : ''} data-id="${checkpoint.id}"> Applicable
+                        </label>
+                    </div>
+                    <p class="checkpoint-question">${checkpoint.name}</p>
+                    
+                    <div class="spec-box" style="background: #ebf4ff; border: 1px solid #bee3f8; border-radius: 8px; padding: 1.25rem 1rem; margin-bottom: 1rem; position: relative;">
+                        <div class="spec-header" style="position: absolute; top: -10px; left: 20px; background: #ebf4ff; padding: 0 10px; font-size: 0.75rem; font-weight: 700; color: var(--accent-color-blue); text-transform: uppercase; border: 1px solid #bee3f8; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
+                            Scoring Criteria
+                        </div>
+                        <div style="width: 100%;">
+                            <textarea class="spec-input spec-attribute" data-id="${checkpoint.id}" style="width: 100%; min-height: 50px; resize: vertical; border: 1px solid #cbd5e0; border-radius: 6px; padding: 10px 12px; font-weight: 600; font-family: var(--font-family-inter); background-color: #ffffff; color: #1e293b; line-height: 1.5; font-size: 0.95rem;">${checkpoint.specification}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="checkpoint-body ${checkpoint.applicable ? '' : 'hidden'}">
+                        <div class="form-group-highlight">
+                            <div class="form-group" style="width: 100%;">
+                                <label style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem; display: block; color: var(--secondary-text);">Score</label>
+                                <div class="score-options" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                                    ${[5, 4, 3, 2, 1, 0].map(s => {
+                                        const isActive = checkpoint.score === s;
+                                        const activeClass = isActive ? `active score-${s}` : '';
+                                        return `
+                                            <button class="score-option ${activeClass}" data-value="${s}" data-id="${checkpoint.id}" style="min-width: 48px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700; border-radius: 6px; border: 1.5px solid #cbd5e0; transition: all 0.2s; cursor: pointer;">
+                                                ${s}
+                                            </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-highlight" style="margin-top: 0.75rem;">
+                             <div class="form-group observation-group" style="margin-bottom: 0;">
+                                <label>Observation</label>
+                                <textarea class="checkpoint-observation" data-id="${checkpoint.id}" placeholder="Enter your observation..." style="min-height: 120px;">${checkpoint.observation || ''}</textarea>
                                 <button class="mic-btn">
                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
                                 </button>
@@ -2374,7 +2778,7 @@
                             <span style="font-size: 0.8rem; background: var(--primary-color); color: white; padding: 2px 10px; border-radius: 20px; font-weight: 600;">${groupCheckpoints.length} Checkpoints</span>
                         </div>
                         <div class="criteria-group-content">
-                            ${groupCheckpoints.map(createCheckpointCardHTML).join('')}
+                            ${groupCheckpoints.map(c => currentModule === 'BE' ? createBECheckpointCardHTML(c) : createCheckpointCardHTML(c)).join('')}
                         </div>
                     </div>
                     `;
@@ -2471,11 +2875,13 @@
                 const actionTypeBtns = card.querySelectorAll('.action-type-btn');
 
                 if (updates.score !== undefined && scoreOptions) {
-                    scoreOptions.querySelectorAll('.score-option').forEach(el => el.classList.remove('active', 'score-0', 'score-4'));
+                    scoreOptions.querySelectorAll('.score-option').forEach(el => {
+                        el.classList.remove('active', 'score-0', 'score-1', 'score-2', 'score-3', 'score-4', 'score-5');
+                    });
                     const activeScore = scoreOptions.querySelector(`[data-value="${updates.score}"]`);
                     if(activeScore) {
                          activeScore.classList.add('active');
-                         activeScore.classList.add(updates.score === 0 ? 'score-0' : 'score-4');
+                         activeScore.classList.add(`score-${updates.score}`);
                     }
                 }
 
@@ -2542,6 +2948,8 @@
                     
                     updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition, action_type: checkpoint.action_type });
                     renderAccordions();
+                } else if (target.classList.contains('checkpoint-observation')) {
+                    checkpoint.observation = target.value;
                 }
             });
 
@@ -2557,10 +2965,20 @@
                 if (target.closest('.score-option')) {
                     const value = parseInt(target.closest('.score-option').dataset.value);
                     checkpoint.score = value;
-                    if (value === 4) {
-                        checkpoint.disposition = 'Compliant';
+                    if (currentModule === 'BE') {
+                        if (value >= 4) {
+                            checkpoint.disposition = 'Compliant';
+                        } else if (value === 3) {
+                            checkpoint.disposition = 'OFI';
+                        } else {
+                            checkpoint.disposition = 'NC';
+                        }
                     } else {
-                        checkpoint.disposition = 'NC';
+                        if (value === 4) {
+                            checkpoint.disposition = 'Compliant';
+                        } else {
+                            checkpoint.disposition = 'NC';
+                        }
                     }
                     checkpoint.action_type = null;
                     updateCheckpointState(card, { score: checkpoint.score, disposition: checkpoint.disposition, action_type: null });
